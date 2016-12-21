@@ -14,7 +14,6 @@ import com.customerservice.Log;
 import com.customerservice.chat.jsonmodel.ActionMsgEntity;
 import com.customerservice.chat.jsonmodel.ChatMsgEntity;
 import com.customerservice.chat.jsonmodel.LinkMsgEntity;
-import com.customerservice.chat.jsonmodel.TextMsgEntity;
 import com.ioyouyun.wchat.WeimiInstance;
 import com.ioyouyun.wchat.message.ConvType;
 import com.ioyouyun.wchat.message.WChatException;
@@ -36,10 +35,9 @@ public class MyClickableSpan extends ClickableSpan {
 
     @Override
     public void updateDrawState(TextPaint ds) {
-        if (entity instanceof TextMsgEntity) {
-            ds.setColor(Color.parseColor("#000000"));
-        } else if (entity instanceof ActionMsgEntity) {
+        if (entity instanceof ActionMsgEntity) {
             ds.setColor(Color.parseColor("#0496fe"));
+            ds.setUnderlineText(false);
         } else if (entity instanceof LinkMsgEntity) {
             ds.setColor(Color.parseColor("#0496fe"));
             ds.setUnderlineText(true);

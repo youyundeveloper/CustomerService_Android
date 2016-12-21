@@ -7,22 +7,20 @@ import android.graphics.Color;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
-import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.amulyakhare.textdrawable.TextDrawable;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.customerservice.AppUtils;
 import com.customerservice.R;
-import com.customerservice.TimeUtil;
 import com.customerservice.chat.jsonmodel.ActionMsgEntity;
 import com.customerservice.chat.jsonmodel.CardMsgEntity;
 import com.customerservice.chat.jsonmodel.ChatMsgEntity;
@@ -33,6 +31,7 @@ import com.customerservice.chat.model.FileEntity;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -50,7 +49,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public ChatAdapter(Context context) {
         this.context = context;
         inflater = LayoutInflater.from(context);
-        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sdf = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
     }
 
     public void setChatList(List<ChatMsgEntity> list) {
@@ -90,72 +90,77 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     }
 
-    private void text(ChatMsgEntity entity, String text, TextView textView){
-        SpannableString textString = new SpannableString(text);
-        ClickableSpan textSpan = new MyClickableSpan(entity, context);
-        textString.setSpan(textSpan, 0, textString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        textView.append(textString);
-        textView.setMovementMethod(LinkMovementMethod.getInstance());
+    private void showHead(final ImageView imageView, Object resource){
+        Glide.with(context)
+                .load(resource)
+                .asBitmap()
+                .centerCrop()
+                .placeholder(R.mipmap.ic_launcher)
+                .error(R.mipmap.ic_launcher)
+                .into(new BitmapImageViewTarget(imageView){
+                    @Override
+                    protected void setResource(Bitmap resource) {
+                        RoundedBitmapDrawable circularBitmapDrawable =
+                                RoundedBitmapDrawableFactory.create(context.getResources(), resource);
+                        circularBitmapDrawable.setCircular(true);
+                        imageView.setImageDrawable(circularBitmapDrawable);
+                    }
+                });
     }
 
     private boolean isFirstNotCard = false; //
-    private void showText(ChatMsgEntity entity, RobotTextHolder robotTextHolder){
+    private SpannableStringBuilder builder = new SpannableStringBuilder();
+    private void spannable(ChatMsgEntity entity){
         if (entity instanceof TextMsgEntity) {
             TextMsgEntity textMsgEntity = (TextMsgEntity) entity;
-            text(textMsgEntity, textMsgEntity.content, robotTextHolder.contentText);
+            int perLength = builder.length();
+            builder.append(textMsgEntity.content);
+            ForegroundColorSpan colorSpan = new ForegroundColorSpan(Color.parseColor("#000000"));
+            builder.setSpan(colorSpan, perLength, builder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            builder.append("\n");
+
             isFirstNotCard = true;
         } else if (entity instanceof LinkMsgEntity) {
             LinkMsgEntity linkMsgEntity = (LinkMsgEntity) entity;
-            text(linkMsgEntity, linkMsgEntity.content, robotTextHolder.contentText);
+            int perLength = builder.length();
+            builder.append(linkMsgEntity.content);
+            ClickableSpan clickableSpan = new MyClickableSpan(entity, context);
+            builder.setSpan(clickableSpan, perLength, builder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            builder.append("\n");
+
             isFirstNotCard = true;
         } else if (entity instanceof ActionMsgEntity) {
             ActionMsgEntity actionMsgEntity = (ActionMsgEntity) entity;
-            text(actionMsgEntity, actionMsgEntity.content, robotTextHolder.contentText);
+            int perLength = builder.length();
+            builder.append(actionMsgEntity.content);
+            ClickableSpan clickableSpan = new MyClickableSpan(entity, context);
+            builder.setSpan(clickableSpan, perLength, builder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            builder.append("\n");
+
             isFirstNotCard = true;
         } else if (entity instanceof CardMsgEntity) {
             CardMsgEntity cardMsgEntity = (CardMsgEntity) entity;
             List<ChatMsgEntity> list = cardMsgEntity.content;
             if(isFirstNotCard)
-                robotTextHolder.contentText.append("\n");
+                builder.append("\n");
             for (int i = 0; i < list.size(); i++){
-                showText(list.get(i), robotTextHolder);
-
-                if(i < list.size() - 1){
-                    robotTextHolder.contentText.append("\n");
-                }
+                spannable(list.get(i));
             }
 
         }
+
     }
 
     private void showDatas(ChatMsgEntity entity, RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof PeopleTextHolder) {
             final PeopleTextHolder peopleTextHolder = (PeopleTextHolder) holder;
-//            Glide.with(context).load(R.drawable.sd).asGif().into(peopleTextHolder.avatarImage);
-//            Glide.with(context).load(R.drawable.you).into(peopleTextHolder.avatarImage);
-            Glide.with(context)
-                    .load(R.drawable.you)
-                    .asBitmap()
-                    .centerCrop()
-                    .placeholder(R.mipmap.ic_launcher)
-                    .error(R.mipmap.ic_launcher)
-                    .into(new BitmapImageViewTarget(peopleTextHolder.avatarImage){
-                        @Override
-                        protected void setResource(Bitmap resource) {
-                            RoundedBitmapDrawable circularBitmapDrawable =
-                                    RoundedBitmapDrawableFactory.create(context.getResources(), resource);
-                            circularBitmapDrawable.setCircular(true);
-                            peopleTextHolder.avatarImage.setImageDrawable(circularBitmapDrawable);
-                        }
-                    });
-            /*String nickName = AppUtils.uid;
-            String end = nickName.substring(nickName.length() - 1, nickName.length());
-            TextDrawable drawable = TextDrawable.builder().buildRound(AppUtils.uid, Color.parseColor("#cb5372"));
-            peopleTextHolder.avatarImage.setImageDrawable(drawable);*/
-//            peopleTextHolder.dataText.setText(sdf.format(new Date(entity.time)));
+            showHead(peopleTextHolder.avatarImage, R.drawable.you);
             if (entity.isShowTime) {
                 peopleTextHolder.dataText.setVisibility(View.VISIBLE);
-                peopleTextHolder.dataText.setText(TimeUtil.format2(entity.time));
+                peopleTextHolder.dataText.setText(sdf.format(new Date(entity.time)));
             } else {
                 peopleTextHolder.dataText.setVisibility(View.GONE);
             }
@@ -164,76 +169,36 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (holder instanceof RobotTextHolder) {
             final RobotTextHolder robotTextHolder = (RobotTextHolder) holder;
             if(entity.headUrl != null && entity.headUrl.startsWith("http")) {
-                Glide.with(context)
-                        .load(entity.headUrl)
-                        .asBitmap()
-                        .centerCrop()
-                        .placeholder(R.mipmap.ic_launcher)
-                        .error(R.mipmap.ic_launcher)
-                        .into(new BitmapImageViewTarget(robotTextHolder.avatarImage){
-                            @Override
-                            protected void setResource(Bitmap resource) {
-                                RoundedBitmapDrawable circularBitmapDrawable =
-                                        RoundedBitmapDrawableFactory.create(context.getResources(), resource);
-                                circularBitmapDrawable.setCircular(true);
-                                robotTextHolder.avatarImage.setImageDrawable(circularBitmapDrawable);
-                            }
-                        });
+                showHead(robotTextHolder.avatarImage, entity.headUrl);
             } else
-                Glide.with(context).load(R.mipmap.ic_launcher).into(robotTextHolder.avatarImage);
-//            robotTextHolder.dataText.setText(sdf.format(new Date(entity.time)));
+                showHead(robotTextHolder.avatarImage, R.mipmap.ic_launcher);
             if (entity.isShowTime) {
                 robotTextHolder.dataText.setVisibility(View.VISIBLE);
-                robotTextHolder.dataText.setText(TimeUtil.format2(entity.time));
+                robotTextHolder.dataText.setText(sdf.format(new Date(entity.time)));
             } else {
                 robotTextHolder.dataText.setVisibility(View.GONE);
             }
 
-            robotTextHolder.contentText.setText("");
             isFirstNotCard = false;
-            showText(entity, robotTextHolder);
+            builder.clear();
+            spannable(entity);
+            if(builder.length() > 0)
+                builder.delete(builder.toString().lastIndexOf("\n"), builder.length());
+            robotTextHolder.contentText.setText(builder);
+            robotTextHolder.contentText.setMovementMethod(LinkMovementMethod.getInstance());
         } else if (holder instanceof PeopleImageHolder) {
             final PeopleImageHolder peopleImageHolder = (PeopleImageHolder) holder;
             if(entity.msgType == ChatMsgEntity.CHAT_TYPE_ROBOT_IMAGE){
-                if(entity.headUrl != null && entity.headUrl.startsWith("http")){
-                    Glide.with(context)
-                            .load(entity.headUrl)
-                            .asBitmap()
-                            .centerCrop()
-                            .placeholder(R.mipmap.ic_launcher)
-                            .error(R.mipmap.ic_launcher)
-                            .into(new BitmapImageViewTarget(peopleImageHolder.avatarImage){
-                                @Override
-                                protected void setResource(Bitmap resource) {
-                                    RoundedBitmapDrawable circularBitmapDrawable =
-                                            RoundedBitmapDrawableFactory.create(context.getResources(), resource);
-                                    circularBitmapDrawable.setCircular(true);
-                                    peopleImageHolder.avatarImage.setImageDrawable(circularBitmapDrawable);
-                                }
-                            });
+                if(entity.headUrl != null && entity.headUrl.startsWith("http")) {
+                    showHead(peopleImageHolder.avatarImage, entity.headUrl);
                 } else
-                    Glide.with(context).load(R.mipmap.ic_launcher).into(peopleImageHolder.avatarImage);
+                    showHead(peopleImageHolder.avatarImage, R.mipmap.ic_launcher);
             }else{
-                Glide.with(context)
-                        .load(R.drawable.xjs)
-                        .asBitmap()
-                        .centerCrop()
-                        .placeholder(R.mipmap.ic_launcher)
-                        .error(R.mipmap.ic_launcher)
-                        .into(new BitmapImageViewTarget(peopleImageHolder.avatarImage){
-                            @Override
-                            protected void setResource(Bitmap resource) {
-                                RoundedBitmapDrawable circularBitmapDrawable =
-                                        RoundedBitmapDrawableFactory.create(context.getResources(), resource);
-                                circularBitmapDrawable.setCircular(true);
-                                peopleImageHolder.avatarImage.setImageDrawable(circularBitmapDrawable);
-                            }
-                        });
+                showHead(peopleImageHolder.avatarImage, R.drawable.you);
             }
-//            peopleImageHolder.dataText.setText(sdf.format(new Date(entity.time)));
             if (entity.isShowTime) {
                 peopleImageHolder.dataText.setVisibility(View.VISIBLE);
-                peopleImageHolder.dataText.setText(TimeUtil.format2(entity.time));
+                peopleImageHolder.dataText.setText(sdf.format(new Date(entity.time)));
             } else {
                 peopleImageHolder.dataText.setVisibility(View.GONE);
             }

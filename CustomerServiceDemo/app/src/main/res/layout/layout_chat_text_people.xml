@@ -10,9 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:background="#bfbfbf"
         android:padding="2dp"
-        android:textColor="#ffffff"
+        android:textColor="@color/color_999"
         android:textSize="12sp"
         android:visibility="gone" />
 

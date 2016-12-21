@@ -81,13 +81,13 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
         if (id == R.id.menu_id_user_id) {
             AppUtils.toastMessage(AppUtils.uid);
             return true;
-        } else if (id == R.id.menu_id_connect_service) {
+        } /*else if (id == R.id.menu_id_connect_service) {
             connect();
             return true;
         } else if (id == R.id.menu_id_disconnect_service) {
             disconnect();
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }

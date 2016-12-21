@@ -7,7 +7,7 @@
         android:icon="@mipmap/ic_launcher"
         android:title="@string/user_id" />
 
-    <item
+    <!--<item
         android:id="@+id/menu_id_connect_service"
         android:icon="@mipmap/ic_launcher"
         android:title="@string/connect_service" />
@@ -15,6 +15,6 @@
     <item
         android:id="@+id/menu_id_disconnect_service"
         android:icon="@mipmap/ic_launcher"
-        android:title="@string/disconnect_service" />
+        android:title="@string/disconnect_service" />-->
 
 </menu>
