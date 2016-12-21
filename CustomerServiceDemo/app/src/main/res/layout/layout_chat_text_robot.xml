@@ -33,6 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
+            android:layout_marginRight="67dp"
             android:layout_toRightOf="@id/iv_user_head"
             android:autoLink="web"
             android:background="@drawable/shape_robot_bg"

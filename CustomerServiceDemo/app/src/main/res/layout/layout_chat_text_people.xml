@@ -32,6 +32,7 @@
             android:id="@+id/tv_chat_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="67dp"
             android:layout_marginRight="10dp"
             android:layout_toLeftOf="@id/iv_user_head"
             android:autoLink="web"

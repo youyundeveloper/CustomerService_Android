@@ -39,9 +39,9 @@ public class MyClickableSpan extends ClickableSpan {
         if (entity instanceof TextMsgEntity) {
             ds.setColor(Color.parseColor("#000000"));
         } else if (entity instanceof ActionMsgEntity) {
-            ds.setColor(Color.parseColor("#00ffff"));
+            ds.setColor(Color.parseColor("#0496fe"));
         } else if (entity instanceof LinkMsgEntity) {
-            ds.setColor(Color.parseColor("#00ffff"));
+            ds.setColor(Color.parseColor("#0496fe"));
             ds.setUnderlineText(true);
         }
     }
@@ -52,7 +52,7 @@ public class MyClickableSpan extends ClickableSpan {
             LinkMsgEntity linkMsgEntity = (LinkMsgEntity) entity;
             linkClick(linkMsgEntity);
         } else if (entity instanceof ActionMsgEntity) {
-//            ((TextView)view).setHighlightColor(context.getResources().getColor(android.R.color.holo_red_light));
+            ((TextView)view).setHighlightColor(Color.parseColor("#a0a0a0"));
             ActionMsgEntity actionMsgEntity = (ActionMsgEntity) entity;
             actionClick(actionMsgEntity);
         }
