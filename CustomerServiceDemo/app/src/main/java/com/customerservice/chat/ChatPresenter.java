@@ -7,14 +7,15 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.customerservice.chat.jsonmodel.JsonParentEntity;
 import com.customerservice.chat.jsonmodel.NoticeMsgEntity;
-import com.customerservice.utils.AppUtils;
-import com.customerservice.utils.Log;
-import com.customerservice.chat.jsonmodel.ChatMsgEntity;
 import com.customerservice.chat.jsonmodel.TextMsgEntity;
+import com.customerservice.chat.model.ChatEntity;
 import com.customerservice.chat.model.FileEntity;
 import com.customerservice.receiver.BroadCastCenter;
 import com.customerservice.receiver.ReceiveMsgRunnable;
+import com.customerservice.utils.AppUtils;
+import com.customerservice.utils.Log;
 import com.ioyouyun.wchat.WeimiInstance;
 import com.ioyouyun.wchat.message.ConvType;
 import com.ioyouyun.wchat.message.FileMessage;
@@ -44,7 +45,7 @@ public class ChatPresenter {
     private MyInnerReceiver receiver;
     private Handler handler;
 
-    private List<ChatMsgEntity> chatMsgEntityList = new ArrayList<>();
+    private List<ChatEntity> chatMsgEntityList = new ArrayList<>();
 
     public ChatPresenter(ChatView chatView, Activity activity) {
         this.chatView = chatView;
@@ -96,12 +97,14 @@ public class ChatPresenter {
             AppUtils.saveImg(thumbnail, thumbnailPath); //保存缩略图
         }
 
+        ChatEntity chatEntity = new ChatEntity();
         FileEntity fileEntity = new FileEntity();
         fileEntity.fileLength = compressFileLength;
         fileEntity.fileLocal = compressPath;
         fileEntity.thumbnailPath = thumbnailPath;
-        fileEntity.msgType = ChatMsgEntity.CHAT_TYPE_PEOPLE_SEND_IMAGE;
-        fileEntity.time = System.currentTimeMillis();
+        chatEntity.msgType = ChatEntity.CHAT_TYPE_PEOPLE_SEND_IMAGE;
+        chatEntity.time = System.currentTimeMillis();
+        chatEntity.fileEntity = fileEntity;
 
         int sliceCount = 0;
         try {
@@ -117,7 +120,7 @@ public class ChatPresenter {
             ReceiveMsgRunnable.fileSend.put(msgId, list);
             ReceiveMsgRunnable.fileSendCount.put(msgId, sliceCount);
 
-            refreshUI(fileEntity);
+            refreshUI(chatEntity);
         }
     }
 
@@ -136,11 +139,14 @@ public class ChatPresenter {
             e.printStackTrace();
         }
         if(result){
+            ChatEntity chatEntity = new ChatEntity();
             TextMsgEntity entity = new TextMsgEntity();
             entity.content = text;
-            entity.msgType = ChatMsgEntity.CHAT_TYPE_PEOPLE_SEND_TEXT;
-            entity.time = System.currentTimeMillis();
-            refreshUI(entity);
+            chatEntity.msgType = ChatEntity.CHAT_TYPE_PEOPLE_SEND_TEXT;
+            chatEntity.time = System.currentTimeMillis();
+            chatEntity.jsonParentEntity = entity;
+
+            refreshUI(chatEntity);
         }
     }
 
@@ -214,31 +220,33 @@ public class ChatPresenter {
                 thumbnailPath = AppUtils.getThumbnailPath(fileMessage.fromuid, fileMessage.msgId);
                 AppUtils.saveImg(fileMessage.thumbData, thumbnailPath); //保存缩略图
             }
-            FileEntity fileEntity = new FileEntity();
-            int msgType = ChatMsgEntity.CHAT_TYPE_ROBOT_IMAGE;
+            ChatEntity chatEntity = new ChatEntity();
+            int msgType = ChatEntity.CHAT_TYPE_ROBOT_IMAGE;
             if (AppUtils.uid.equals(fileMessage.fromuid))
-                msgType = ChatMsgEntity.CHAT_TYPE_PEOPLE_SEND_IMAGE;
-            fileEntity.msgType = msgType;
+                msgType = ChatEntity.CHAT_TYPE_PEOPLE_SEND_IMAGE;
+            chatEntity.msgType = msgType;
+            chatEntity.time = fileMessage.time;
+            FileEntity fileEntity = new FileEntity();
             fileEntity.fileId = fileMessage.fileId;
             fileEntity.fileLength = fileMessage.fileLength;
             fileEntity.pieceSize = fileMessage.pieceSize;
             fileEntity.thumbnailPath = thumbnailPath;
-            fileEntity.time = fileMessage.time;
+            chatEntity.fileEntity = fileEntity;
             String padding = new String(fileMessage.padding);
             Log.logD("额外消息：" + padding);
             if (AppUtils.isJSONObject(padding)) {
                 try {
                     JSONObject object = new JSONObject(padding);
                     if (object != null) {
-                        fileEntity.nickName = object.optString(AppUtils.NICK_NAME);
-                        fileEntity.headUrl = object.optString(AppUtils.HEAD_URL);
+                        chatEntity.nickName = object.optString(AppUtils.NICK_NAME);
+                        chatEntity.headUrl = object.optString(AppUtils.HEAD_URL);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
 
-            chatMsgEntityList.add(0, fileEntity);
+            chatMsgEntityList.add(0, chatEntity);
             if (chatMsgEntityList.size() > 1) {
                 if (chatMsgEntityList.get(1).time - chatMsgEntityList.get(0).time <= AppUtils.MSG_TIME_SEPARATE) {
                     chatMsgEntityList.get(1).isShowTime = false;
@@ -251,13 +259,14 @@ public class ChatPresenter {
     private void receiveText(TextMessage textMessage) {
         historyCount++;
 
-        ChatMsgEntity entity = AppUtils.parseRobotMsg(textMessage.text);
-        int msgType = ChatMsgEntity.CHAT_TYPE_ROBOT_TEXT;
+        ChatEntity chatEntity = new ChatEntity();
+        JsonParentEntity entity = AppUtils.parseRobotMsg(textMessage.text);
+        int msgType = ChatEntity.CHAT_TYPE_ROBOT_TEXT;
         if (AppUtils.uid.equals(textMessage.fromuid))
-            msgType = ChatMsgEntity.CHAT_TYPE_PEOPLE_SEND_TEXT;
+            msgType = ChatEntity.CHAT_TYPE_PEOPLE_SEND_TEXT;
         if (entity != null) {
             if(entity instanceof NoticeMsgEntity){
-                msgType = ChatMsgEntity.CHAT_TYPE_NOTICE;
+                msgType = ChatEntity.CHAT_TYPE_NOTICE;
             } else {
                 String padding = new String(textMessage.padding);
                 Log.logD("额外消息：" + padding);
@@ -265,19 +274,20 @@ public class ChatPresenter {
                     try {
                         JSONObject object = new JSONObject(padding);
                         if (object != null) {
-                            entity.nickName = object.optString(AppUtils.NICK_NAME);
-                            entity.headUrl = object.optString(AppUtils.HEAD_URL);
+                            chatEntity.nickName = object.optString(AppUtils.NICK_NAME);
+                            chatEntity.headUrl = object.optString(AppUtils.HEAD_URL);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
             }
-            entity.msgType = msgType;
-            entity.time = textMessage.time;
-            entity.isShowTime = true;
+            chatEntity.msgType = msgType;
+            chatEntity.time = textMessage.time;
+            chatEntity.jsonParentEntity = entity;
+            chatEntity.isShowTime = true;
 
-            chatMsgEntityList.add(0, entity);
+            chatMsgEntityList.add(0, chatEntity);
             if (chatMsgEntityList.size() > 1) {
                 if (chatMsgEntityList.get(1).time - chatMsgEntityList.get(0).time <= AppUtils.MSG_TIME_SEPARATE) {
                     chatMsgEntityList.get(1).isShowTime = false;
@@ -321,7 +331,7 @@ public class ChatPresenter {
      * 刷新UI,并计算时间显示规则
      * @param entity
      */
-    private void refreshUI(ChatMsgEntity entity){
+    private void refreshUI(ChatEntity entity){
         int index = chatMsgEntityList.size();
         chatMsgEntityList.add(index, entity);
         int preIndex = index - 1;
@@ -346,7 +356,7 @@ public class ChatPresenter {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (AppUtils.MSG_TYPE_RECEIVE.equals(action)) {
-                ChatMsgEntity entity = (ChatMsgEntity) intent.getSerializableExtra(AppUtils.TYPE_MSG);
+                ChatEntity entity = (ChatEntity) intent.getSerializableExtra(AppUtils.TYPE_MSG);
                 refreshUI(entity);
             }else if (AppUtils.MSG_TYPE_SEND_FILE_PRO.equals(action)) {
                 String fileId = intent.getStringExtra(AppUtils.FILE_FILEID);
@@ -355,7 +365,7 @@ public class ChatPresenter {
             }else if (AppUtils.MSG_TYPE_DOWNLOAD_IMAGE_FINISH.equals(action)) {
                 int position = intent.getIntExtra(AppUtils.MSG_TYPE_POSITION, 0);
                 FileEntity entity = (FileEntity) intent.getSerializableExtra(AppUtils.TYPE_MSG);
-                chatMsgEntityList.set(position, entity);
+                chatMsgEntityList.get(position).fileEntity = entity;
                 chatView.refreshList(chatMsgEntityList);
 
                 Log.logD("下载大图完成,更新数据");

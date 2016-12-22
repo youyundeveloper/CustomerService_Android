@@ -11,6 +11,8 @@ import java.util.List;
 
 /**
  * Created by Bill on 2016/12/13.
+ *
+ * 本地广播用来全局接收IM消息
  */
 
 public class BroadCastCenter {

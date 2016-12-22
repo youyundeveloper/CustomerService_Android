@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.customerservice.utils.AppUtils;
 import com.customerservice.utils.Log;
 import com.customerservice.chat.jsonmodel.ActionMsgEntity;
-import com.customerservice.chat.jsonmodel.ChatMsgEntity;
+import com.customerservice.chat.jsonmodel.JsonParentEntity;
 import com.customerservice.chat.jsonmodel.LinkMsgEntity;
 import com.ioyouyun.wchat.WeimiInstance;
 import com.ioyouyun.wchat.message.ConvType;
@@ -24,10 +24,10 @@ import com.ioyouyun.wchat.message.WChatException;
 
 public class MyClickableSpan extends ClickableSpan {
 
-    ChatMsgEntity entity;
+    JsonParentEntity entity;
     Context context;
 
-    public MyClickableSpan(ChatMsgEntity entity, Context context) {
+    public MyClickableSpan(JsonParentEntity entity, Context context) {
         super();
         this.entity = entity;
         this.context = context;

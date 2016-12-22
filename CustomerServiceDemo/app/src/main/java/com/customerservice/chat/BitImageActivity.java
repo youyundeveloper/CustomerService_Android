@@ -22,6 +22,11 @@ import com.customerservice.receiver.BroadCastCenter;
 import com.ioyouyun.wchat.WeimiInstance;
 import com.ioyouyun.wchat.message.WChatException;
 
+/**
+ * Created by Bill on 2016/12/8.
+ * 查看大图
+ */
+
 public class BitImageActivity extends AppCompatActivity {
 
     private final static String FILE_ENTITY = "file_entity";

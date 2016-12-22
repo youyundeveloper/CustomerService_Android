@@ -1,7 +1,6 @@
 package com.customerservice.chat;
 
-import com.customerservice.chat.jsonmodel.ChatMsgEntity;
-import com.customerservice.chat.model.FileEntity;
+import com.customerservice.chat.model.ChatEntity;
 
 import java.util.List;
 
@@ -15,7 +14,7 @@ public interface ChatView {
      * 设置数据
      * @param list
      */
-    void refreshList(List<ChatMsgEntity> list);
+    void refreshList(List<ChatEntity> list);
 
     /**
      * 定位到某一行

@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.customerservice.chat.jsonmodel.ActionMsgEntity;
 import com.customerservice.chat.jsonmodel.CardMsgEntity;
-import com.customerservice.chat.jsonmodel.ChatMsgEntity;
+import com.customerservice.chat.jsonmodel.JsonParentEntity;
 import com.customerservice.chat.jsonmodel.LinkMsgEntity;
 import com.customerservice.chat.jsonmodel.NoticeMsgEntity;
 import com.customerservice.chat.jsonmodel.TextMsgEntity;
@@ -48,7 +48,7 @@ public class AppUtils {
     public static Context mAppContext;
     public static String uid; // 用户ID
 
-    public static String CUSTOM_SERVICE_ID = "549341"; // 客服ID 549341
+    public static String CUSTOM_SERVICE_ID = "539578"; // 客服ID 549341
 
     public static final long MSG_TIME_SEPARATE = 300000L; // IM时间间隔5分钟
 
@@ -119,14 +119,13 @@ public class AppUtils {
     private static final String PARAMS = "params";
     private static final String URL = "url";
     private static final String DATA_ID = "data_id";
-
     private static final String SORT = "sort";
     private static final String ENTER_KEY = "entercs";
     private static final String LEAVE_KEY = "leavecs";
     private static final String FROM = "from";
-
     public static final String NICK_NAME = "name";
     public static final String HEAD_URL = "pic";
+    public static final String SYSTEM_MSG_CODE = "50001";
 
     /**
      * 封装text消息
@@ -184,14 +183,14 @@ public class AppUtils {
      * @param json
      * @return
      */
-    public static ChatMsgEntity parseRobotMsg(String json) {
+    public static JsonParentEntity parseRobotMsg(String json) {
         try {
             JSONObject object = new JSONObject(json);
             if (object.has(TYPE)) {
                 String type = object.getString(TYPE);
                 if (TEXT.equals(type)) {
                     String content = object.getString(CONTENT);
-                    if (object.has(DATA_ID) && "50001".equals(object.getString(DATA_ID))) {
+                    if (object.has(DATA_ID) && SYSTEM_MSG_CODE.equals(object.getString(DATA_ID))) {
                         NoticeMsgEntity noticeMsgEntity = new NoticeMsgEntity();
                         noticeMsgEntity.content = content;
                         return noticeMsgEntity;
@@ -215,7 +214,7 @@ public class AppUtils {
                     return actionMsgEntity;
                 } else if (CARD.equals(type)) {
                     CardMsgEntity cardMsgEntity = new CardMsgEntity();
-                    List<ChatMsgEntity> list = new ArrayList<>();
+                    List<JsonParentEntity> list = new ArrayList<>();
                     JSONArray array = object.getJSONArray(CONTENT);
                     for (int i = 0; i < array.length(); i++) {
                         JSONObject arrayObj = array.getJSONObject(i);
@@ -262,7 +261,7 @@ public class AppUtils {
     }
 
     /**
-     * 自己测试数据
+     * 自己封装发送客服消息类型，测试使用
      *
      * @return
      */

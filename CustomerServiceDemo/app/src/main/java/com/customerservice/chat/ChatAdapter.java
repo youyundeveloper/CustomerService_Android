@@ -21,12 +21,13 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.customerservice.chat.model.ChatEntity;
 import com.customerservice.utils.AppUtils;
 import com.customerservice.R;
 import com.customerservice.chat.imagemask.MaskView;
 import com.customerservice.chat.jsonmodel.ActionMsgEntity;
 import com.customerservice.chat.jsonmodel.CardMsgEntity;
-import com.customerservice.chat.jsonmodel.ChatMsgEntity;
+import com.customerservice.chat.jsonmodel.JsonParentEntity;
 import com.customerservice.chat.jsonmodel.LinkMsgEntity;
 import com.customerservice.chat.jsonmodel.NoticeMsgEntity;
 import com.customerservice.chat.jsonmodel.TextMsgEntity;
@@ -47,7 +48,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public final int screenWidth1p4 = AppUtils.mScreenWidth / 4;
 
     private OnItemClickListener onItemClickListener;
-    private List<ChatMsgEntity> chatList = new ArrayList<>();
+    private List<ChatEntity> chatList = new ArrayList<>();
     private Context context;
     private LayoutInflater inflater;
     private SimpleDateFormat sdf;
@@ -58,35 +59,35 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         sdf = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
     }
 
-    public void setChatList(List<ChatMsgEntity> list) {
+    public void setChatList(List<ChatEntity> list) {
         this.chatList.clear();
         chatList.addAll(list);
         this.notifyDataSetChanged();
     }
 
-    public ChatMsgEntity getItem(int position){
+    public ChatEntity getItem(int position){
         return chatList.get(position);
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == ChatMsgEntity.CHAT_TYPE_PEOPLE_SEND_TEXT) {
+        if (viewType == ChatEntity.CHAT_TYPE_PEOPLE_SEND_TEXT) {
             View view = inflater.inflate(R.layout.layout_chat_text_people, parent, false);
             PeopleTextHolder viewHolder = new PeopleTextHolder(view);
             return viewHolder;
-        } else if(viewType == ChatMsgEntity.CHAT_TYPE_ROBOT_TEXT){
+        } else if(viewType == ChatEntity.CHAT_TYPE_ROBOT_TEXT){
             View mView = LayoutInflater.from(context).inflate(R.layout.layout_chat_text_robot, parent, false);
             RobotTextHolder viewHolder = new RobotTextHolder(mView);
             return viewHolder;
-        }else if(viewType == ChatMsgEntity.CHAT_TYPE_PEOPLE_SEND_IMAGE){
+        }else if(viewType == ChatEntity.CHAT_TYPE_PEOPLE_SEND_IMAGE){
             View mView = LayoutInflater.from(context).inflate(R.layout.layout_chat_image_people, parent, false);
             PeopleImageHolder viewHolder = new PeopleImageHolder(mView);
             return viewHolder;
-        }else if(viewType == ChatMsgEntity.CHAT_TYPE_ROBOT_IMAGE){
+        }else if(viewType == ChatEntity.CHAT_TYPE_ROBOT_IMAGE){
             View mView = LayoutInflater.from(context).inflate(R.layout.layout_chat_image_robot, parent, false);
             PeopleImageHolder viewHolder = new PeopleImageHolder(mView);
             return viewHolder;
-        }else if(viewType == ChatMsgEntity.CHAT_TYPE_NOTICE){
+        }else if(viewType == ChatEntity.CHAT_TYPE_NOTICE){
             View mView = LayoutInflater.from(context).inflate(R.layout.layout_chat_notice, parent, false);
             NoticeHolder noticeHolder = new NoticeHolder(mView);
             return noticeHolder;
@@ -115,7 +116,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private boolean isFirstNotCard = false; //
     private SpannableStringBuilder builder = new SpannableStringBuilder();
-    private void spannable(ChatMsgEntity entity){
+    private void spannable(JsonParentEntity entity){
         if (entity instanceof TextMsgEntity) {
             TextMsgEntity textMsgEntity = (TextMsgEntity) entity;
             int perLength = builder.length();
@@ -148,7 +149,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             isFirstNotCard = true;
         } else if (entity instanceof CardMsgEntity) {
             CardMsgEntity cardMsgEntity = (CardMsgEntity) entity;
-            List<ChatMsgEntity> list = cardMsgEntity.content;
+            List<JsonParentEntity> list = cardMsgEntity.content;
             if(isFirstNotCard)
                 builder.append("\n");
             for (int i = 0; i < list.size(); i++){
@@ -159,7 +160,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     }
 
-    private void showDatas(ChatMsgEntity entity, RecyclerView.ViewHolder holder, final int position) {
+    private void showDatas(ChatEntity entity, RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof PeopleTextHolder) {
             final PeopleTextHolder peopleTextHolder = (PeopleTextHolder) holder;
             showHead(peopleTextHolder.avatarImage, R.drawable.you);
@@ -169,7 +170,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             } else {
                 peopleTextHolder.dataText.setVisibility(View.GONE);
             }
-            TextMsgEntity textMsgEntity = (TextMsgEntity) entity;
+            TextMsgEntity textMsgEntity = (TextMsgEntity) entity.jsonParentEntity;
             peopleTextHolder.contentText.setText(textMsgEntity.content);
         } else if (holder instanceof RobotTextHolder) {
             final RobotTextHolder robotTextHolder = (RobotTextHolder) holder;
@@ -186,7 +187,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             isFirstNotCard = false;
             builder.clear();
-            spannable(entity);
+            spannable(entity.jsonParentEntity);
             if(builder.length() > 0)
                 builder.delete(builder.toString().lastIndexOf("\n"), builder.length());
             robotTextHolder.contentText.setText(builder);
@@ -194,7 +195,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else if (holder instanceof PeopleImageHolder) {
             final PeopleImageHolder peopleImageHolder = (PeopleImageHolder) holder;
             NinePatchDrawable ninePatchDrawable;
-            if(entity.msgType == ChatMsgEntity.CHAT_TYPE_ROBOT_IMAGE){
+            if(entity.msgType == ChatEntity.CHAT_TYPE_ROBOT_IMAGE){
                 if(entity.headUrl != null && entity.headUrl.startsWith("http")) {
                     showHead(peopleImageHolder.avatarImage, entity.headUrl);
                 } else
@@ -204,7 +205,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 showHead(peopleImageHolder.avatarImage, R.drawable.you);
                 ninePatchDrawable = (NinePatchDrawable) context.getResources().getDrawable(R.drawable.chat_img_right_mask);
             }
-            final FileEntity fileEntity = (FileEntity) entity;
+            final FileEntity fileEntity = entity.fileEntity;
             Bitmap bitmap = BitmapFactory.decodeFile(fileEntity.thumbnailPath);
             MaskView imgView = new MaskView(context, bitmap, ninePatchDrawable,
                     screenWidth1p3, screenWidth1p3,
@@ -231,14 +232,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             });
         }else if (holder instanceof NoticeHolder) {
             final NoticeHolder noticeHolder = (NoticeHolder) holder;
-            NoticeMsgEntity noticeMsgEntity = (NoticeMsgEntity) entity;
+            NoticeMsgEntity noticeMsgEntity = (NoticeMsgEntity) entity.jsonParentEntity;
             noticeHolder.noticeMsgText.setText(noticeMsgEntity.content);
         }
     }
 
     @Override
     public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        final ChatMsgEntity entity = chatList.get(position);
+        final ChatEntity entity = chatList.get(position);
         showDatas(entity, holder, position);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

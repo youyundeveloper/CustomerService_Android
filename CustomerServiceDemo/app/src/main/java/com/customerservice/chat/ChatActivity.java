@@ -27,9 +27,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.customerservice.utils.AppUtils;
 import com.customerservice.R;
-import com.customerservice.chat.jsonmodel.ChatMsgEntity;
+import com.customerservice.chat.model.ChatEntity;
+import com.customerservice.utils.AppUtils;
 
 import java.io.File;
 import java.util.List;
@@ -321,7 +321,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
     }
 
     @Override
-    public void refreshList(List<ChatMsgEntity> list) {
+    public void refreshList(List<ChatEntity> list) {
         chatAdapter.setChatList(list);
     }
 
