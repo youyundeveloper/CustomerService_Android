@@ -33,6 +33,9 @@
         <activity
             android:name=".chat.ChatActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".chat.BitImageActivity"
+            android:screenOrientation="portrait" />
 
         <!-- 游云 -->
         <receiver android:name="com.ioyouyun.wchat.util.NetworkReceiver">
@@ -41,7 +44,6 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".chat.BitImageActivity"></activity>
     </application>
 
 </manifest>

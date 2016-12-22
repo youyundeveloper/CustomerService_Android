@@ -49,7 +49,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public ChatAdapter(Context context) {
         this.context = context;
         inflater = LayoutInflater.from(context);
-//        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         sdf = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
     }
 

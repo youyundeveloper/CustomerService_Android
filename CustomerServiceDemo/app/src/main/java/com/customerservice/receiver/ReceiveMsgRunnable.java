@@ -68,6 +68,10 @@ public class ReceiveMsgRunnable implements Runnable {
         }
     }
 
+    /**
+     * 发送文件进度回调
+     * @param weimiNotice
+     */
     private void sendfileMethod(WeimiNotice weimiNotice) {
         List<Integer> unUploadSliceList = (List<Integer>) weimiNotice.getObject();
         String msgId = weimiNotice.getWithtag();
@@ -136,6 +140,10 @@ public class ReceiveMsgRunnable implements Runnable {
         BroadCastCenter.getInstance().broadcast(intent);
     }
 
+    /**
+     * 接收文件
+     * @param weimiNotice
+     */
     private void fileMessageMethod(WeimiNotice weimiNotice   ) {
         Log.logD("收到一条文件消息");
         FileMessage fileMessage = (FileMessage) weimiNotice.getObject();
@@ -144,6 +152,10 @@ public class ReceiveMsgRunnable implements Runnable {
         }
     }
 
+    /**
+     * 接收图片
+     * @param fileMessage
+     */
     private void receiveImage(FileMessage fileMessage) {
         String thumbnailPath = "";
         if (null != fileMessage.thumbData) {
@@ -171,11 +183,19 @@ public class ReceiveMsgRunnable implements Runnable {
         setBroadCast(AppUtils.MSG_TYPE_RECEIVE, fileEntity);
     }
 
+    /**
+     * 富文本消息
+     * @param weimiNotice
+     */
     private void mixedTextMessageMethod(WeimiNotice weimiNotice) {
         TextMessage textMessage = (TextMessage) weimiNotice.getObject();
         Log.logD("收到一条富文本消息：" + textMessage.text);
     }
 
+    /**
+     * 文本消息
+     * @param weimiNotice
+     */
     private void textMessageMethod(WeimiNotice weimiNotice) {
         TextMessage textMessage = (TextMessage) weimiNotice.getObject();
         Log.logD("收到一条文本消息：" + textMessage.text);
@@ -200,6 +220,11 @@ public class ReceiveMsgRunnable implements Runnable {
         }
     }
 
+    /**
+     * 发送消息
+     * @param action
+     * @param entity
+     */
     private void setBroadCast(String action, ChatMsgEntity entity) {
         Intent intent = new Intent();
         intent.setAction(action);

@@ -13,18 +13,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.customerservice.AppUtils;
 import com.customerservice.R;
@@ -33,6 +31,10 @@ import com.customerservice.chat.jsonmodel.ChatMsgEntity;
 import java.io.File;
 import java.util.List;
 
+/**
+ * Created by Bill on 2016/12/8.
+ */
+
 public class ChatActivity extends AppCompatActivity implements ChatView, View.OnClickListener {
 
     public static final int REQUEST_CODE_CAMERA = 1001;
@@ -40,6 +42,8 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
 
     private InputMethodManager manager;
 
+    private View backBtn;
+    private TextView titleText;
     private View photoGalleryBtn; // 相册
     private View takePhotoBtn; // 拍照
     private EditText chatMsgEdit;
@@ -57,39 +61,15 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
+        setContentView(R.layout.activity_kf_chat);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
-        setToolBar();
         initView();
         initData();
         addListener();
 
         connect();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_setting, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.menu_id_user_id) {
-            AppUtils.toastMessage(AppUtils.uid);
-            return true;
-        } /*else if (id == R.id.menu_id_connect_service) {
-            connect();
-            return true;
-        } else if (id == R.id.menu_id_disconnect_service) {
-            disconnect();
-            return true;
-        }*/
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -109,10 +89,16 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
         presenter.onDestroy();
     }
 
+    /**
+     * 进入房间连接客服
+     */
     private void connect(){
         presenter.sendMixedText(1);
     }
 
+    /**
+     * 离开房间调用告诉客服已断开
+     */
     private void disconnect(){
         presenter.sendMixedText(2);
     }
@@ -125,6 +111,8 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
     }
 
     private void initData() {
+        titleText.setText(getResources().getString(R.string.online_service));
+
         presenter = new ChatPresenter(this, this);
 
         recyclerView.setMotionEventSplittingEnabled(false);
@@ -195,9 +183,12 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
         sendBtn.setOnClickListener(this);
         takePhotoBtn.setOnClickListener(this);
         photoGalleryBtn.setOnClickListener(this);
+        backBtn.setOnClickListener(this);
     }
 
     private void initView() {
+        titleText = (TextView) findViewById(R.id.tv_title);
+        backBtn = findViewById(R.id.iv_left);
         chatMsgEdit = (EditText) findViewById(R.id.et_send);
         sendBtn = (Button) findViewById(R.id.btn_send);
         moreBtn = (Button) findViewById(R.id.btn_more);
@@ -205,21 +196,6 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
         recyclerView = (RecyclerView) findViewById(R.id.rv_chat);
         photoGalleryBtn = findViewById(R.id.tv_picture);
         takePhotoBtn = findViewById(R.id.tv_take_photo);
-    }
-
-    protected void setToolBar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            toolbar.setTitle("");
-            setSupportActionBar(toolbar);
-            toolbar.setNavigationIcon(R.drawable.back);
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    finish();
-                }
-            });
-        }
     }
 
     /**
@@ -241,7 +217,6 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
      * 拍照
      */
     private File cameraFile;
-
     private void selectPicFromCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         long ts = System.currentTimeMillis();
@@ -306,6 +281,8 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
             selectPicFromLocal();
         } else if (view == takePhotoBtn) {
             selectPicFromCamera();
+        } else if(view == backBtn){
+            onBackPressed();
         }
     }
 

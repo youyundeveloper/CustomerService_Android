@@ -9,10 +9,10 @@
         android:id="@+id/tv_notice_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_marginTop="25.5dp"
         android:background="@drawable/shape_notice_bg"
         android:gravity="center"
-        android:textColor="@android:color/white"
-        android:textSize="14sp" />
+        android:textColor="@color/color_notice_font"
+        android:textSize="11sp" />
 
 </LinearLayout>

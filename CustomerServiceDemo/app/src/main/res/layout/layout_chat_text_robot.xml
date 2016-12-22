@@ -2,45 +2,45 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="6dp">
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/tv_send_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:padding="2dp"
-        android:textColor="@color/color_999"
-        android:textSize="12sp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/color_time_font"
+        android:textSize="11sp"
         android:visibility="gone" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="5dp">
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="16dp">
 
         <ImageView
             android:id="@+id/iv_user_head"
-            android:layout_width="52dp"
-            android:layout_height="52dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:scaleType="centerCrop" />
 
         <TextView
             android:id="@+id/tv_chat_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="67dp"
+            android:layout_marginLeft="7.5dp"
+            android:layout_marginRight="59.5dp"
             android:layout_toRightOf="@id/iv_user_head"
             android:autoLink="web"
             android:background="@drawable/shape_robot_bg"
             android:lineSpacingExtra="5sp"
             android:lineSpacingMultiplier="0.8"
-            android:textColor="#000000"
+            android:textColor="@color/color_robot_font"
             android:textColorLink="@drawable/tv_selector"
-            android:textSize="16sp" />
+            android:textSize="15sp" />
 
     </RelativeLayout>
 

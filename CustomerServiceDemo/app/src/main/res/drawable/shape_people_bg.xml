@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <solid android:color="@color/color_0094ff"></solid>
+    <solid android:color="@color/color_robot_bg"></solid>
 
     <corners
-        android:bottomLeftRadius="10dp"
-        android:bottomRightRadius="10dp"
-        android:topLeftRadius="10dp"
+        android:bottomLeftRadius="40dp"
+        android:bottomRightRadius="40dp"
+        android:topLeftRadius="40dp"
         android:topRightRadius="0dp" />
 
     <padding
-        android:bottom="10dp"
-        android:left="10dp"
-        android:right="10dp"
-        android:top="10dp" />
+        android:bottom="9dp"
+        android:left="17dp"
+        android:right="17dp"
+        android:top="9dp" />
 
     <size android:height="50dp" />
 </shape>

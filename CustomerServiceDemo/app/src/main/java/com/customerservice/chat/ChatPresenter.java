@@ -75,13 +75,13 @@ public class ChatPresenter {
         unregisterReceiver();
     }
 
+    /**
+     * 发送图片
+     * @param filePath
+     * @param fileName
+     */
     public void sendImage(String filePath, String fileName){
         String msgId = WeimiInstance.getInstance().genLocalMsgId(AppUtils.CUSTOM_SERVICE_ID);
-
-        int fileLength = 0;
-        File file = new File(filePath);
-        if (file.exists())
-            fileLength = (int) file.length();
 
         String compressPath = AppUtils.compressImage(filePath, AppUtils.getChatImagePath(fileName));
         int compressFileLength = 0;
@@ -94,10 +94,6 @@ public class ChatPresenter {
             thumbnailPath = AppUtils.getThumbnailPath(AppUtils.uid, msgId);
             AppUtils.saveImg(thumbnail, thumbnailPath); //保存缩略图
         }
-        int thumbnailFileLength = 0;
-        File thumbnailFile = new File(thumbnailPath);
-        if (thumbnailFile.exists())
-            thumbnailFileLength = (int) thumbnailFile.length();
 
         FileEntity fileEntity = new FileEntity();
         fileEntity.fileLength = compressFileLength;
@@ -105,8 +101,6 @@ public class ChatPresenter {
         fileEntity.thumbnailPath = thumbnailPath;
         fileEntity.msgType = ChatMsgEntity.CHAT_TYPE_PEOPLE_SEND_IMAGE;
         fileEntity.time = System.currentTimeMillis();
-
-        Log.logD("文件原图大小：" + fileLength + " |压缩后大小：" + compressFileLength + " |缩略图大小：" + thumbnailFileLength);
 
         int sliceCount = 0;
         try {
@@ -315,6 +309,10 @@ public class ChatPresenter {
         });
     }
 
+    /**
+     * 刷新UI,并计算时间显示规则
+     * @param entity
+     */
     private void refreshUI(ChatMsgEntity entity){
         int index = chatMsgEntityList.size();
         chatMsgEntityList.add(index, entity);
