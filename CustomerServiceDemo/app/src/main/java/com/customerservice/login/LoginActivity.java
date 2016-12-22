@@ -8,8 +8,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.customerservice.AppUtils;
-import com.customerservice.Log;
+import com.customerservice.utils.AppUtils;
+import com.customerservice.utils.Log;
 import com.customerservice.R;
 import com.customerservice.chat.ChatActivity;
 import com.ioyouyun.wchat.WeimiInstance;

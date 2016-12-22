@@ -3,12 +3,10 @@ package com.customerservice.receiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.customerservice.AppUtils;
-import com.customerservice.Log;
 import com.customerservice.chat.jsonmodel.ChatMsgEntity;
-import com.customerservice.chat.jsonmodel.NoticeMsgEntity;
-import com.customerservice.chat.jsonmodel.TextMsgEntity;
 import com.customerservice.chat.model.FileEntity;
+import com.customerservice.utils.AppUtils;
+import com.customerservice.utils.Log;
 import com.ioyouyun.wchat.message.FileMessage;
 import com.ioyouyun.wchat.message.NoticeType;
 import com.ioyouyun.wchat.message.NotifyCenter;
@@ -18,7 +16,6 @@ import com.ioyouyun.wchat.protocol.MetaMessageType;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -171,14 +168,16 @@ public class ReceiveMsgRunnable implements Runnable {
         fileEntity.time = fileMessage.time;
         String padding = new String(fileMessage.padding);
         Log.logD("额外消息：" + padding);
-        try {
-            JSONObject object = new JSONObject(padding);
-            if(object != null){
-                fileEntity.nickName = object.optString(AppUtils.NICK_NAME);
-                fileEntity.headUrl = object.optString(AppUtils.HEAD_URL);
+        if (AppUtils.isJSONObject(padding)) {
+            try {
+                JSONObject object = new JSONObject(padding);
+                if (object != null) {
+                    fileEntity.nickName = object.optString(AppUtils.NICK_NAME);
+                    fileEntity.headUrl = object.optString(AppUtils.HEAD_URL);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
         setBroadCast(AppUtils.MSG_TYPE_RECEIVE, fileEntity);
     }

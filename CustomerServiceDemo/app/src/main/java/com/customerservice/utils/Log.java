@@ -1,4 +1,4 @@
-package com.customerservice;
+package com.customerservice.utils;
 
 /**
  * Created by Bill on 2016/12/8.

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.NinePatchDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
 import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
@@ -20,7 +21,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
+import com.customerservice.utils.AppUtils;
 import com.customerservice.R;
+import com.customerservice.chat.imagemask.MaskView;
 import com.customerservice.chat.jsonmodel.ActionMsgEntity;
 import com.customerservice.chat.jsonmodel.CardMsgEntity;
 import com.customerservice.chat.jsonmodel.ChatMsgEntity;
@@ -39,6 +42,9 @@ import java.util.List;
  */
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    public final int screenWidth1p3 = AppUtils.mScreenWidth / 3;
+    public final int screenWidth1p4 = AppUtils.mScreenWidth / 4;
 
     private OnItemClickListener onItemClickListener;
     private List<ChatMsgEntity> chatList = new ArrayList<>();
@@ -187,25 +193,37 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             robotTextHolder.contentText.setMovementMethod(LinkMovementMethod.getInstance());
         } else if (holder instanceof PeopleImageHolder) {
             final PeopleImageHolder peopleImageHolder = (PeopleImageHolder) holder;
+            NinePatchDrawable ninePatchDrawable;
             if(entity.msgType == ChatMsgEntity.CHAT_TYPE_ROBOT_IMAGE){
                 if(entity.headUrl != null && entity.headUrl.startsWith("http")) {
                     showHead(peopleImageHolder.avatarImage, entity.headUrl);
                 } else
                     showHead(peopleImageHolder.avatarImage, R.mipmap.ic_launcher);
+                ninePatchDrawable = (NinePatchDrawable) context.getResources().getDrawable(R.drawable.chat_img_left_mask);
             }else{
                 showHead(peopleImageHolder.avatarImage, R.drawable.you);
+                ninePatchDrawable = (NinePatchDrawable) context.getResources().getDrawable(R.drawable.chat_img_right_mask);
             }
+            final FileEntity fileEntity = (FileEntity) entity;
+            Bitmap bitmap = BitmapFactory.decodeFile(fileEntity.thumbnailPath);
+            MaskView imgView = new MaskView(context, bitmap, ninePatchDrawable,
+                    screenWidth1p3, screenWidth1p3,
+                    screenWidth1p4, screenWidth1p4);
+            peopleImageHolder.imgParent.removeAllViews();
+            peopleImageHolder.imgParent.addView(imgView);
+            ViewGroup.LayoutParams layoutParams = imgView.getLayoutParams();
+            layoutParams.height = imgView.getMaskViewSize() != null ?
+                    imgView.getMaskViewSize().viewHeight : layoutParams.height;
+            layoutParams.width = imgView.getMaskViewSize() != null ?
+                    imgView.getMaskViewSize().viewWidth : layoutParams.width;
+
             if (entity.isShowTime) {
                 peopleImageHolder.dataText.setVisibility(View.VISIBLE);
                 peopleImageHolder.dataText.setText(sdf.format(new Date(entity.time)));
             } else {
                 peopleImageHolder.dataText.setVisibility(View.GONE);
             }
-            final FileEntity fileEntity = (FileEntity) entity;
-            Bitmap bitmap = BitmapFactory.decodeFile(fileEntity.thumbnailPath);
-            peopleImageHolder.contentImage.setImageBitmap(bitmap);
-
-            peopleImageHolder.contentImage.setOnClickListener(new View.OnClickListener() {
+            peopleImageHolder.imgParent.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     BitImageActivity.startActivity(context, fileEntity, position);
@@ -253,6 +271,9 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.onItemClickListener = onItemClickListener;
     }
 
+    /**
+     * 通知消息
+     */
     class NoticeHolder extends RecyclerView.ViewHolder {
 
         TextView noticeMsgText;
@@ -272,13 +293,13 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         TextView dataText;
         ImageView avatarImage;
-        ImageView contentImage;
+        ViewGroup imgParent;
 
         public PeopleImageHolder(View itemView) {
             super(itemView);
             dataText = (TextView) itemView.findViewById(R.id.tv_send_time);
             avatarImage = (ImageView) itemView.findViewById(R.id.iv_user_head);
-            contentImage = (ImageView) itemView.findViewById(R.id.iv_chat_content);
+            imgParent = (ViewGroup) itemView.findViewById(R.id.img_parent);
         }
     }
 

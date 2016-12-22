@@ -1,4 +1,4 @@
-package com.customerservice;
+package com.customerservice.utils;
 
 import android.app.Activity;
 import android.content.Context;
@@ -61,6 +61,19 @@ public class AppUtils {
 
     public static final String MSG_TYPE_DOWNLOAD_IMAGE_FINISH = "msg_type_download_image_finish"; // 收到大图后更新聊天数据,避免重复下载
     public static final String MSG_TYPE_POSITION = "msg_type_position"; // 收到大图后更新聊天数据,避免重复下载
+
+    public static int mScreenWidth;
+    public static int mScreenHeigth;
+
+    public static void init(Context context){
+        mAppContext = context;
+        mScreenWidth = mAppContext.getResources().getDisplayMetrics().widthPixels;
+        mScreenHeigth = mAppContext.getResources().getDisplayMetrics().heightPixels;
+        if (mScreenWidth > mScreenHeigth) {
+            mScreenWidth = mAppContext.getResources().getDisplayMetrics().heightPixels;
+            mScreenHeigth = mAppContext.getResources().getDisplayMetrics().widthPixels;
+        }
+    }
 
     /**
      * 获取Android Id
@@ -472,8 +485,7 @@ public class AppUtils {
         if (filePath != null && !filePath.equals("")) {
             File f = new File(filePath);
             if (f.exists()) {
-                Bitmap bmp = compressImage(filePath,
-                        THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, true);
+                Bitmap bmp = compressImage(filePath, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, true);
                 if (bmp != null) {
                     b = Bitmap2Bytes(bmp, THUMBNAIL_MAX_LEN);
                 }

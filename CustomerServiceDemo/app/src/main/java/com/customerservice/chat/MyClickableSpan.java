@@ -9,8 +9,8 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.TextView;
 
-import com.customerservice.AppUtils;
-import com.customerservice.Log;
+import com.customerservice.utils.AppUtils;
+import com.customerservice.utils.Log;
 import com.customerservice.chat.jsonmodel.ActionMsgEntity;
 import com.customerservice.chat.jsonmodel.ChatMsgEntity;
 import com.customerservice.chat.jsonmodel.LinkMsgEntity;

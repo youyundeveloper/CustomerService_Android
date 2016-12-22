@@ -1,8 +1,10 @@
 package com.customerservice.chat;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -24,7 +27,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.customerservice.AppUtils;
+import com.customerservice.utils.AppUtils;
 import com.customerservice.R;
 import com.customerservice.chat.jsonmodel.ChatMsgEntity;
 
@@ -162,28 +165,38 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
         chatMsgEdit.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (isShowMore) {
-                    isShowMore = false;
-                    moreLayout.setVisibility(View.GONE);
-                }
+                closeBoard();
                 return false;
             }
         });
-        recyclerView.setOnTouchListener(new View.OnTouchListener() {
+        recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (isShowMore) {
-                    isShowMore = false;
-                    moreLayout.setVisibility(View.GONE);
-                }
+            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                closeBoard();
                 return false;
             }
+
+            @Override
+            public void onTouchEvent(RecyclerView rv, MotionEvent e) {}
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {}
         });
         moreBtn.setOnClickListener(this);
         sendBtn.setOnClickListener(this);
         takePhotoBtn.setOnClickListener(this);
         photoGalleryBtn.setOnClickListener(this);
         backBtn.setOnClickListener(this);
+    }
+
+    private void closeBoard(){
+        if (isSoftInputShown()) {
+            hideSoftInput(chatMsgEdit);
+        }
+        if (isShowMore) {
+            isShowMore = false;
+            moreLayout.setVisibility(View.GONE);
+        }
     }
 
     private void initView() {
@@ -268,7 +281,9 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
                 isShowMore = false;
                 moreLayout.setVisibility(View.GONE);
             } else {
-                hideSoftInput(chatMsgEdit);
+                if (isSoftInputShown()) {
+                    hideSoftInput(chatMsgEdit);
+                }
                 isShowMore = true;
                 moreLayout.setVisibility(View.VISIBLE);
             }
@@ -324,4 +339,64 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
     public void onCompleteLoad() {
         swipeRefreshLayout.setRefreshing(false);
     }
+
+    /**
+     * 是否显示软件盘
+     *
+     * @return
+     */
+    private boolean isSoftInputShown() {
+        return getSupportSoftInputHeight() != 0;
+    }
+
+    /**
+     * 获取软件盘的高度
+     *
+     * @return
+     */
+    private int getSupportSoftInputHeight() {
+        Rect r = new Rect();
+        /**
+         * decorView是window中的最顶层view，可以从window中通过getDecorView获取到decorView。
+         * 通过decorView获取到程序显示的区域，包括标题栏，但不包括状态栏。
+         */
+        getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
+        //获取屏幕的高度
+        int screenHeight = getWindow().getDecorView().getRootView().getHeight();
+        //计算软件盘的高度
+        int softInputHeight = screenHeight - r.bottom;
+
+        /**
+         * 某些Android版本下，没有显示软键盘时减出来的高度总是144，而不是零，
+         * 这是因为高度是包括了虚拟按键栏的(例如华为系列)，所以在API Level高于20时，
+         * 我们需要减去底部虚拟按键栏的高度（如果有的话）
+         */
+        if (Build.VERSION.SDK_INT >= 20) {
+            // When SDK Level >= 20 (Android L), the softInputHeight will contain the height of softButtonsBar (if has)
+            softInputHeight = softInputHeight - getSoftButtonsBarHeight();
+        }
+        return softInputHeight;
+    }
+
+    /**
+     * 底部虚拟按键栏的高度
+     *
+     * @return
+     */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private int getSoftButtonsBarHeight() {
+        DisplayMetrics metrics = new DisplayMetrics();
+        //这个方法获取可能不是真实屏幕的高度
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int usableHeight = metrics.heightPixels;
+        //获取当前屏幕的真实高度
+        getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+        int realHeight = metrics.heightPixels;
+        if (realHeight > usableHeight) {
+            return realHeight - usableHeight;
+        } else {
+            return 0;
+        }
+    }
+
 }

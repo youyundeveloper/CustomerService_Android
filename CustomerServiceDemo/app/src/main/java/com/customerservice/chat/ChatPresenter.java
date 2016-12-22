@@ -7,8 +7,9 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.customerservice.AppUtils;
-import com.customerservice.Log;
+import com.customerservice.chat.jsonmodel.NoticeMsgEntity;
+import com.customerservice.utils.AppUtils;
+import com.customerservice.utils.Log;
 import com.customerservice.chat.jsonmodel.ChatMsgEntity;
 import com.customerservice.chat.jsonmodel.TextMsgEntity;
 import com.customerservice.chat.model.FileEntity;
@@ -206,9 +207,8 @@ public class ChatPresenter {
     }
 
     private void receiveFile(FileMessage fileMessage) {
-        historyCount++;
-
         if (MetaMessageType.image == fileMessage.type) {
+            historyCount++;
             String thumbnailPath = "";
             if (null != fileMessage.thumbData) {
                 thumbnailPath = AppUtils.getThumbnailPath(fileMessage.fromuid, fileMessage.msgId);
@@ -226,14 +226,16 @@ public class ChatPresenter {
             fileEntity.time = fileMessage.time;
             String padding = new String(fileMessage.padding);
             Log.logD("额外消息：" + padding);
-            try {
-                JSONObject object = new JSONObject(padding);
-                if(object != null){
-                    fileEntity.nickName = object.optString(AppUtils.NICK_NAME);
-                    fileEntity.headUrl = object.optString(AppUtils.HEAD_URL);
+            if (AppUtils.isJSONObject(padding)) {
+                try {
+                    JSONObject object = new JSONObject(padding);
+                    if (object != null) {
+                        fileEntity.nickName = object.optString(AppUtils.NICK_NAME);
+                        fileEntity.headUrl = object.optString(AppUtils.HEAD_URL);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
 
             chatMsgEntityList.add(0, fileEntity);
@@ -254,16 +256,22 @@ public class ChatPresenter {
         if (AppUtils.uid.equals(textMessage.fromuid))
             msgType = ChatMsgEntity.CHAT_TYPE_PEOPLE_SEND_TEXT;
         if (entity != null) {
-            String padding = new String(textMessage.padding);
-            Log.logD("额外消息：" + padding);
-            try {
-                JSONObject object = new JSONObject(padding);
-                if(object != null){
-                    entity.nickName = object.optString(AppUtils.NICK_NAME);
-                    entity.headUrl = object.optString(AppUtils.HEAD_URL);
+            if(entity instanceof NoticeMsgEntity){
+                msgType = ChatMsgEntity.CHAT_TYPE_NOTICE;
+            } else {
+                String padding = new String(textMessage.padding);
+                Log.logD("额外消息：" + padding);
+                if (AppUtils.isJSONObject(padding)) {
+                    try {
+                        JSONObject object = new JSONObject(padding);
+                        if (object != null) {
+                            entity.nickName = object.optString(AppUtils.NICK_NAME);
+                            entity.headUrl = object.optString(AppUtils.HEAD_URL);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
             entity.msgType = msgType;
             entity.time = textMessage.time;

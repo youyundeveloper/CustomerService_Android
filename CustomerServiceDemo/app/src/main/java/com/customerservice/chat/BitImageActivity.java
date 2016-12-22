@@ -14,8 +14,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.customerservice.AppUtils;
-import com.customerservice.Log;
+import com.customerservice.utils.AppUtils;
+import com.customerservice.utils.Log;
 import com.customerservice.R;
 import com.customerservice.chat.model.FileEntity;
 import com.customerservice.receiver.BroadCastCenter;
