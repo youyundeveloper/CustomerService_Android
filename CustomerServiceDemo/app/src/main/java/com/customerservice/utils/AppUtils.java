@@ -47,6 +47,8 @@ public class AppUtils {
     public static boolean isOnlinePlatform = false;
     public static Context mAppContext;
     public static String uid; // 用户ID
+    public static String nickName; // 用户昵称
+    public static String headUrl = "http://avatar.csdn.net/6/A/5/1_y331271939.jpg"; // 用头像
 
     public static String CUSTOM_SERVICE_ID = "549341"; // 客服ID 549341   mx3:539578  mi2a:562846
 
@@ -125,6 +127,7 @@ public class AppUtils {
     private static final String FROM = "from";
     public static final String NICK_NAME = "name";
     public static final String HEAD_URL = "pic";
+    public static final String USERID = "uid";
     public static final String SYSTEM_MSG_CODE = "50001";
 
     /**
@@ -138,6 +141,23 @@ public class AppUtils {
         try {
             object.put(TYPE, TEXT);
             object.put(CONTENT, text);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return object.toString();
+    }
+
+    /**
+     * 封装头像额外消息
+     *
+     * @return
+     */
+    public static String encapsulateExt() {
+        JSONObject object = new JSONObject();
+        try {
+            object.put(USERID, uid);
+            object.put(NICK_NAME, nickName);
+            object.put(HEAD_URL, headUrl);
         } catch (JSONException e) {
             e.printStackTrace();
         }

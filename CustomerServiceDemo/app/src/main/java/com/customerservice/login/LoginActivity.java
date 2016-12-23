@@ -78,6 +78,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (authResultData.success) {
                         DebugConfig.DEBUG = true;
                         AppUtils.uid = WeimiInstance.getInstance().getUID();
+                        AppUtils.nickName = AppUtils.uid;
                         Log.logD("登录成功：" + AppUtils.uid);
                         showUid(AppUtils.uid);
                         gotoActivity(ChatActivity.class);

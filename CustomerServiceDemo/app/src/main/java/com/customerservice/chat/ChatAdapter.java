@@ -163,7 +163,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private void showDatas(ChatEntity entity, RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof PeopleTextHolder) {
             final PeopleTextHolder peopleTextHolder = (PeopleTextHolder) holder;
-            showHead(peopleTextHolder.avatarImage, R.drawable.you);
+            showHead(peopleTextHolder.avatarImage, AppUtils.headUrl);
             if (entity.isShowTime) {
                 peopleTextHolder.dataText.setVisibility(View.VISIBLE);
                 peopleTextHolder.dataText.setText(sdf.format(new Date(entity.time)));
@@ -194,7 +194,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             robotTextHolder.contentText.setMovementMethod(LinkMovementMethod.getInstance());
         } else if (holder instanceof PeopleImageHolder) {
             final PeopleImageHolder peopleImageHolder = (PeopleImageHolder) holder;
-            showHead(peopleImageHolder.avatarImage, R.drawable.you);
+            showHead(peopleImageHolder.avatarImage, AppUtils.headUrl);
             final FileEntity fileEntity = entity.fileEntity;
             Bitmap bitmap = BitmapFactory.decodeFile(fileEntity.thumbnailPath);
             MaskView imgView = new MaskView(context, bitmap,

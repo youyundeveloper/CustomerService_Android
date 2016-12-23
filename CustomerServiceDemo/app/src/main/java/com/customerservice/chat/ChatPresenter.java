@@ -30,6 +30,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -159,8 +160,14 @@ public class ChatPresenter {
     public void sendMixedText(int type) {
         String msgId = WeimiInstance.getInstance().genLocalMsgId(AppUtils.CUSTOM_SERVICE_ID);
         try {
-            WeimiInstance.getInstance().sendMixedText(msgId, AppUtils.CUSTOM_SERVICE_ID, AppUtils.encapsulateEnterOrLeaveMsg(type), ConvType.single, null, 60);
+            byte[] padding = null;
+            if(1 == type){
+                padding = AppUtils.encapsulateExt().getBytes("utf-8");
+            }
+            WeimiInstance.getInstance().sendMixedText(msgId, AppUtils.CUSTOM_SERVICE_ID, AppUtils.encapsulateEnterOrLeaveMsg(type), ConvType.single, padding, 60);
         } catch (WChatException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
     }
