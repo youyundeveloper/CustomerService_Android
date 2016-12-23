@@ -79,6 +79,7 @@ public class LoginActivity extends AppCompatActivity {
                         DebugConfig.DEBUG = true;
                         AppUtils.uid = WeimiInstance.getInstance().getUID();
                         Log.logD("登录成功：" + AppUtils.uid);
+                        showUid(AppUtils.uid);
                         gotoActivity(ChatActivity.class);
                     } else {
                         Log.logD("登录失败");
@@ -90,6 +91,15 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         }).start();
+    }
+
+    private void showUid(final String uid){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AppUtils.toastMessage(uid);
+            }
+        });
     }
 
     private void closeProgress(){

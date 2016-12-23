@@ -21,8 +21,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.customerservice.chat.model.ChatEntity;
-import com.customerservice.utils.AppUtils;
 import com.customerservice.R;
 import com.customerservice.chat.imagemask.MaskView;
 import com.customerservice.chat.jsonmodel.ActionMsgEntity;
@@ -31,7 +29,9 @@ import com.customerservice.chat.jsonmodel.JsonParentEntity;
 import com.customerservice.chat.jsonmodel.LinkMsgEntity;
 import com.customerservice.chat.jsonmodel.NoticeMsgEntity;
 import com.customerservice.chat.jsonmodel.TextMsgEntity;
+import com.customerservice.chat.model.ChatEntity;
 import com.customerservice.chat.model.FileEntity;
+import com.customerservice.utils.AppUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -85,7 +85,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return viewHolder;
         }else if(viewType == ChatEntity.CHAT_TYPE_ROBOT_IMAGE){
             View mView = LayoutInflater.from(context).inflate(R.layout.layout_chat_image_robot, parent, false);
-            PeopleImageHolder viewHolder = new PeopleImageHolder(mView);
+            RobotImageHolder viewHolder = new RobotImageHolder(mView);
             return viewHolder;
         }else if(viewType == ChatEntity.CHAT_TYPE_NOTICE){
             View mView = LayoutInflater.from(context).inflate(R.layout.layout_chat_notice, parent, false);
@@ -194,20 +194,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             robotTextHolder.contentText.setMovementMethod(LinkMovementMethod.getInstance());
         } else if (holder instanceof PeopleImageHolder) {
             final PeopleImageHolder peopleImageHolder = (PeopleImageHolder) holder;
-            NinePatchDrawable ninePatchDrawable;
-            if(entity.msgType == ChatEntity.CHAT_TYPE_ROBOT_IMAGE){
-                if(entity.headUrl != null && entity.headUrl.startsWith("http")) {
-                    showHead(peopleImageHolder.avatarImage, entity.headUrl);
-                } else
-                    showHead(peopleImageHolder.avatarImage, R.mipmap.ic_launcher);
-                ninePatchDrawable = (NinePatchDrawable) context.getResources().getDrawable(R.drawable.chat_img_left_mask);
-            }else{
-                showHead(peopleImageHolder.avatarImage, R.drawable.you);
-                ninePatchDrawable = (NinePatchDrawable) context.getResources().getDrawable(R.drawable.chat_img_right_mask);
-            }
+            showHead(peopleImageHolder.avatarImage, R.drawable.you);
             final FileEntity fileEntity = entity.fileEntity;
             Bitmap bitmap = BitmapFactory.decodeFile(fileEntity.thumbnailPath);
-            MaskView imgView = new MaskView(context, bitmap, ninePatchDrawable,
+            MaskView imgView = new MaskView(context, bitmap,
+                    (NinePatchDrawable) context.getResources().getDrawable(R.drawable.chat_img_right_mask),
                     screenWidth1p3, screenWidth1p3,
                     screenWidth1p4, screenWidth1p4);
             peopleImageHolder.imgParent.removeAllViews();
@@ -218,13 +209,54 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             layoutParams.width = imgView.getMaskViewSize() != null ?
                     imgView.getMaskViewSize().viewWidth : layoutParams.width;
 
+            if(entity.fileProgress == -1){
+                peopleImageHolder.progressText.setVisibility(View.GONE);
+            }else{
+                peopleImageHolder.progressText.setVisibility(View.VISIBLE);
+                peopleImageHolder.progressText.setText(String.valueOf(entity.fileProgress));
+            }
+
             if (entity.isShowTime) {
                 peopleImageHolder.dataText.setVisibility(View.VISIBLE);
                 peopleImageHolder.dataText.setText(sdf.format(new Date(entity.time)));
             } else {
                 peopleImageHolder.dataText.setVisibility(View.GONE);
             }
-            peopleImageHolder.imgParent.setOnClickListener(new View.OnClickListener() {
+
+            peopleImageHolder.imageLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    BitImageActivity.startActivity(context, fileEntity, position);
+                }
+            });
+        }else if(holder instanceof RobotImageHolder){
+            final RobotImageHolder robotImageHolder = (RobotImageHolder) holder;
+            if(entity.headUrl != null && entity.headUrl.startsWith("http")) {
+                showHead(robotImageHolder.avatarImage, entity.headUrl);
+            } else
+                showHead(robotImageHolder.avatarImage, R.mipmap.ic_launcher);
+            final FileEntity fileEntity = entity.fileEntity;
+            Bitmap bitmap = BitmapFactory.decodeFile(fileEntity.thumbnailPath);
+            MaskView imgView = new MaskView(context, bitmap,
+                    (NinePatchDrawable) context.getResources().getDrawable(R.drawable.chat_img_left_mask),
+                    screenWidth1p3, screenWidth1p3,
+                    screenWidth1p4, screenWidth1p4);
+            robotImageHolder.imgParent.removeAllViews();
+            robotImageHolder.imgParent.addView(imgView);
+            ViewGroup.LayoutParams layoutParams = imgView.getLayoutParams();
+            layoutParams.height = imgView.getMaskViewSize() != null ?
+                    imgView.getMaskViewSize().viewHeight : layoutParams.height;
+            layoutParams.width = imgView.getMaskViewSize() != null ?
+                    imgView.getMaskViewSize().viewWidth : layoutParams.width;
+
+            if (entity.isShowTime) {
+                robotImageHolder.dataText.setVisibility(View.VISIBLE);
+                robotImageHolder.dataText.setText(sdf.format(new Date(entity.time)));
+            } else {
+                robotImageHolder.dataText.setVisibility(View.GONE);
+            }
+
+            robotImageHolder.imgParent.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     BitImageActivity.startActivity(context, fileEntity, position);
@@ -288,19 +320,40 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     /**
-     * 图片消息
+     * 接收图片消息
+     */
+    class RobotImageHolder extends RecyclerView.ViewHolder {
+
+        TextView dataText;
+        ImageView avatarImage;
+        ViewGroup imgParent;
+
+        public RobotImageHolder(View itemView) {
+            super(itemView);
+            dataText = (TextView) itemView.findViewById(R.id.tv_send_time);
+            avatarImage = (ImageView) itemView.findViewById(R.id.iv_user_head);
+            imgParent = (ViewGroup) itemView.findViewById(R.id.img_parent);
+        }
+    }
+
+    /**
+     * 发送图片消息
      */
     class PeopleImageHolder extends RecyclerView.ViewHolder {
 
         TextView dataText;
         ImageView avatarImage;
         ViewGroup imgParent;
+        View imageLayout;
+        TextView progressText;
 
         public PeopleImageHolder(View itemView) {
             super(itemView);
             dataText = (TextView) itemView.findViewById(R.id.tv_send_time);
             avatarImage = (ImageView) itemView.findViewById(R.id.iv_user_head);
             imgParent = (ViewGroup) itemView.findViewById(R.id.img_parent);
+            imageLayout = itemView.findViewById(R.id.image_layout);
+            progressText = (TextView) itemView.findViewById(R.id.tv_progress);
         }
     }
 

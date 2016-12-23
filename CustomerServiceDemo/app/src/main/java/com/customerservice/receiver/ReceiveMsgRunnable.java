@@ -167,6 +167,7 @@ public class ReceiveMsgRunnable implements Runnable {
         fileEntity.fileLength = fileMessage.fileLength;
         fileEntity.pieceSize = fileMessage.pieceSize;
         fileEntity.thumbnailPath = thumbnailPath;
+        chatEntity.msgId = fileMessage.msgId;
         chatEntity.msgType = ChatEntity.CHAT_TYPE_ROBOT_IMAGE;
         chatEntity.time = fileMessage.time;
         chatEntity.fileEntity = fileEntity;
@@ -205,6 +206,7 @@ public class ReceiveMsgRunnable implements Runnable {
         JsonParentEntity entity = AppUtils.parseRobotMsg(textMessage.text);
         if (entity != null) {
             ChatEntity chatEntity = new ChatEntity();
+            chatEntity.msgId = textMessage.msgId;
             chatEntity.msgType = ChatEntity.CHAT_TYPE_ROBOT_TEXT;
             if(entity instanceof NoticeMsgEntity){
                 chatEntity.msgType = ChatEntity.CHAT_TYPE_NOTICE;

@@ -48,7 +48,7 @@ public class AppUtils {
     public static Context mAppContext;
     public static String uid; // 用户ID
 
-    public static String CUSTOM_SERVICE_ID = "539578"; // 客服ID 549341
+    public static String CUSTOM_SERVICE_ID = "549341"; // 客服ID 549341   mx3:539578  mi2a:562846
 
     public static final long MSG_TIME_SEPARATE = 300000L; // IM时间间隔5分钟
 

@@ -102,6 +102,7 @@ public class ChatPresenter {
         fileEntity.fileLength = compressFileLength;
         fileEntity.fileLocal = compressPath;
         fileEntity.thumbnailPath = thumbnailPath;
+        chatEntity.msgId = msgId;
         chatEntity.msgType = ChatEntity.CHAT_TYPE_PEOPLE_SEND_IMAGE;
         chatEntity.time = System.currentTimeMillis();
         chatEntity.fileEntity = fileEntity;
@@ -142,6 +143,7 @@ public class ChatPresenter {
             ChatEntity chatEntity = new ChatEntity();
             TextMsgEntity entity = new TextMsgEntity();
             entity.content = text;
+            chatEntity.msgId = msgId;
             chatEntity.msgType = ChatEntity.CHAT_TYPE_PEOPLE_SEND_TEXT;
             chatEntity.time = System.currentTimeMillis();
             chatEntity.jsonParentEntity = entity;
@@ -224,6 +226,7 @@ public class ChatPresenter {
             int msgType = ChatEntity.CHAT_TYPE_ROBOT_IMAGE;
             if (AppUtils.uid.equals(fileMessage.fromuid))
                 msgType = ChatEntity.CHAT_TYPE_PEOPLE_SEND_IMAGE;
+            chatEntity.msgId = fileMessage.msgId;
             chatEntity.msgType = msgType;
             chatEntity.time = fileMessage.time;
             FileEntity fileEntity = new FileEntity();
@@ -282,6 +285,7 @@ public class ChatPresenter {
                     }
                 }
             }
+            chatEntity.msgId = textMessage.msgId;
             chatEntity.msgType = msgType;
             chatEntity.time = textMessage.time;
             chatEntity.jsonParentEntity = entity;
@@ -362,6 +366,15 @@ public class ChatPresenter {
                 String fileId = intent.getStringExtra(AppUtils.FILE_FILEID);
                 int progress = intent.getIntExtra(AppUtils.FILE_PROGRESS, 0);
                 Log.logD("发送进度：" + progress);
+                for (int i = chatMsgEntityList.size() - 1; i >= 0; i--) {
+                    if(chatMsgEntityList.get(i).msgId.equals(fileId)){
+                        if(progress == 100){
+                            chatMsgEntityList.get(i).fileProgress = -1;
+                        } else chatMsgEntityList.get(i).fileProgress = progress;
+                        break;
+                    }
+                }
+                chatView.refreshList(chatMsgEntityList);
             }else if (AppUtils.MSG_TYPE_DOWNLOAD_IMAGE_FINISH.equals(action)) {
                 int position = intent.getIntExtra(AppUtils.MSG_TYPE_POSITION, 0);
                 FileEntity entity = (FileEntity) intent.getSerializableExtra(AppUtils.TYPE_MSG);

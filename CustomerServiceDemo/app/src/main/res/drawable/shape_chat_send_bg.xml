@@ -5,6 +5,8 @@
         android:width="1px"
         android:color="@color/color_edit_bg" />
 
+    <solid android:color="@color/color_white" />
+
     <corners android:radius="4dp" />
 
 </shape>
