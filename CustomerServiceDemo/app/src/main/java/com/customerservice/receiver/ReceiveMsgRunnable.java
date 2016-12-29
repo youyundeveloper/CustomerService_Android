@@ -143,11 +143,17 @@ public class ReceiveMsgRunnable implements Runnable {
      * 接收文件
      * @param weimiNotice
      */
-    private void fileMessageMethod(WeimiNotice weimiNotice   ) {
+    private void fileMessageMethod(WeimiNotice weimiNotice) {
         Log.logD("收到一条文件消息");
         FileMessage fileMessage = (FileMessage) weimiNotice.getObject();
         if (MetaMessageType.image == fileMessage.type) {
-            receiveImage(fileMessage);
+            String fromId = fileMessage.fromuid;
+            if (AppUtils.CUSTOM_SERVICE_ID.equals(fromId)) {
+                receiveImage(fileMessage);
+            }else{
+                Log.logD("收到" + fromId + "发来的文件消息");
+            }
+
         }
     }
 
@@ -202,34 +208,41 @@ public class ReceiveMsgRunnable implements Runnable {
      */
     private void textMessageMethod(WeimiNotice weimiNotice) {
         TextMessage textMessage = (TextMessage) weimiNotice.getObject();
-        Log.logD("收到一条文本消息：" + textMessage.text);
-        JsonParentEntity entity = AppUtils.parseRobotMsg(textMessage.text);
-        if (entity != null) {
-            ChatEntity chatEntity = new ChatEntity();
-            chatEntity.msgId = textMessage.msgId;
-            chatEntity.msgType = ChatEntity.CHAT_TYPE_ROBOT_TEXT;
-            if(entity instanceof NoticeMsgEntity){
-                chatEntity.msgType = ChatEntity.CHAT_TYPE_NOTICE;
-            } else {
-                String padding = new String(textMessage.padding);
-                Log.logD("额外消息：" + padding);
-                if (AppUtils.isJSONObject(padding)) {
-                    try {
-                        JSONObject object = new JSONObject(padding);
-                        if (object != null) {
-                            chatEntity.nickName = object.optString(AppUtils.NICK_NAME);
-                            chatEntity.headUrl = object.optString(AppUtils.HEAD_URL);
+        String fromId = textMessage.fromuid;
+        // 判断是不是客服下发的消息，其他人发的消息这里不做处理
+        if(AppUtils.CUSTOM_SERVICE_ID.equals(fromId)){
+            Log.logD("收到一条文本消息：" + textMessage.text);
+            JsonParentEntity entity = AppUtils.parseRobotMsg(textMessage.text);
+            if (entity != null) {
+                ChatEntity chatEntity = new ChatEntity();
+                chatEntity.msgId = textMessage.msgId;
+                chatEntity.msgType = ChatEntity.CHAT_TYPE_ROBOT_TEXT;
+                if(entity instanceof NoticeMsgEntity){
+                    chatEntity.msgType = ChatEntity.CHAT_TYPE_NOTICE;
+                } else {
+                    String padding = new String(textMessage.padding);
+                    Log.logD("额外消息：" + padding);
+                    if (AppUtils.isJSONObject(padding)) {
+                        try {
+                            JSONObject object = new JSONObject(padding);
+                            if (object != null) {
+                                chatEntity.nickName = object.optString(AppUtils.NICK_NAME);
+                                chatEntity.headUrl = object.optString(AppUtils.HEAD_URL);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
                 }
-            }
-            chatEntity.time = textMessage.time;
-            chatEntity.jsonParentEntity = entity;
+                chatEntity.time = textMessage.time;
+                chatEntity.jsonParentEntity = entity;
 
-            setBroadCast(AppUtils.MSG_TYPE_RECEIVE, chatEntity);
+                setBroadCast(AppUtils.MSG_TYPE_RECEIVE, chatEntity);
+            }
+        } else {
+            Log.logD("收到" + fromId + "发来的文本消息");
         }
+
     }
 
     /**

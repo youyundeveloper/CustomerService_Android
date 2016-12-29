@@ -180,7 +180,7 @@ public class ChatPresenter {
         if (chatMsgEntityList.size() > 0) {
             time = chatMsgEntityList.get(0).time / 1000;
         }
-        WeimiInstance.getInstance().shortGetHistoryByTime(AppUtils.CUSTOM_SERVICE_ID, time, 20, ConvType.single, new HttpCallback() {
+        WeimiInstance.getInstance().shortGetHistoryByTime(AppUtils.CUSTOM_SERVICE_ID, time, 10, ConvType.single, new HttpCallback() {
             @Override
             public void onResponse(String s) {
 
