@@ -53,9 +53,6 @@ public class ChatPresenter {
         this.activity = activity;
         handler = new Handler(Looper.getMainLooper());
         registerReceiver();
-        ReceiveMsgRunnable runnable = new ReceiveMsgRunnable(activity);
-        Thread msgThread = new Thread(runnable);
-        msgThread.start();
     }
 
     /**
@@ -164,6 +161,7 @@ public class ChatPresenter {
             if(1 == type){
                 padding = AppUtils.encapsulateExt().getBytes("utf-8");
             }
+            Log.logD("ext:" + AppUtils.encapsulateExt());
             WeimiInstance.getInstance().sendMixedText(msgId, AppUtils.CUSTOM_SERVICE_ID, AppUtils.encapsulateEnterOrLeaveMsg(type), ConvType.single, padding, 60);
         } catch (WChatException e) {
             e.printStackTrace();
@@ -180,7 +178,7 @@ public class ChatPresenter {
         if (chatMsgEntityList.size() > 0) {
             time = chatMsgEntityList.get(0).time / 1000;
         }
-        WeimiInstance.getInstance().shortGetHistoryByTime(AppUtils.CUSTOM_SERVICE_ID, time, 10, ConvType.single, new HttpCallback() {
+        WeimiInstance.getInstance().shortGetHistoryByTime(null, AppUtils.CUSTOM_SERVICE_ID, time, 10, ConvType.single, new HttpCallback() {
             @Override
             public void onResponse(String s) {
 

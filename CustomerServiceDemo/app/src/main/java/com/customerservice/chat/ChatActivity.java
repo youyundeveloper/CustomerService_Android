@@ -30,6 +30,7 @@ import android.widget.TextView;
 import com.customerservice.R;
 import com.customerservice.chat.model.ChatEntity;
 import com.customerservice.utils.AppUtils;
+import com.ioyouyun.wchat.WeimiInstance;
 
 import java.io.File;
 import java.util.List;
@@ -96,6 +97,8 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
      * 进入房间连接客服
      */
     private void connect(){
+        // 取消设置不sycn客服消息
+        WeimiInstance.getInstance().cancleShieldSyncUserId(AppUtils.CUSTOM_SERVICE_ID);
         presenter.sendMixedText(1);
     }
 
@@ -104,6 +107,8 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
      */
     private void disconnect(){
         presenter.sendMixedText(2);
+        // 设置不sycn客服消息
+        WeimiInstance.getInstance().shieldSyncUserId(AppUtils.CUSTOM_SERVICE_ID);
     }
 
     /**

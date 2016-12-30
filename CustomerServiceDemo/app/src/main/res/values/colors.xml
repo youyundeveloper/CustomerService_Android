@@ -4,6 +4,8 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <color name="opacity_5_black">#80000000</color>
+
     <color name="color_white">#fff</color>
     <color name="color_black">#000</color>
     <color name="color_robot_bg">#0094ff</color>

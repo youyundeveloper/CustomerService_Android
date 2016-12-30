@@ -9,6 +9,7 @@ import com.customerservice.chat.model.ChatEntity;
 import com.customerservice.chat.model.FileEntity;
 import com.customerservice.utils.AppUtils;
 import com.customerservice.utils.Log;
+import com.ioyouyun.wchat.data.UnreadData;
 import com.ioyouyun.wchat.message.FileMessage;
 import com.ioyouyun.wchat.message.NoticeType;
 import com.ioyouyun.wchat.message.NotifyCenter;
@@ -19,6 +20,7 @@ import com.ioyouyun.wchat.protocol.MetaMessageType;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -62,8 +64,34 @@ public class ReceiveMsgRunnable implements Runnable {
                 downloadMethod(weimiNotice);
             } else if (NoticeType.sendfile == type) {
                 sendfileMethod(weimiNotice);
+            } else if (NoticeType.recvUnreadNum == type){
+                recvUnreadNumMethod(weimiNotice);
             }
 
+        }
+    }
+
+    /**
+     * 单聊未读消息数
+     * @param weimiNotice
+     */
+    private void recvUnreadNumMethod(WeimiNotice weimiNotice) {
+        Map<String, UnreadData> map = (Map<String, UnreadData>) weimiNotice.getObject();
+        if(map != null) {
+            Iterator<Map.Entry<String, UnreadData>> entries = map.entrySet().iterator();
+            while (entries.hasNext()) {
+                Map.Entry<String, UnreadData> entry = entries.next();
+                Log.logD("Key = " + entry.getKey() + ", Value = " + entry.getValue().num);
+                if(AppUtils.CUSTOM_SERVICE_ID.equals(entry.getKey())){
+                    int num = entry.getValue().num;
+                    AppUtils.unReadNum = num;
+                    Intent intent = new Intent();
+                    intent.setAction(AppUtils.MSG_TYPE_RECV_UNREAD_NUM);
+                    intent.putExtra(AppUtils.TYPE_MSG, num);
+                    intent.setPackage(context.getPackageName());
+                    BroadCastCenter.getInstance().broadcast(intent);
+                }
+            }
         }
     }
 

@@ -3,15 +3,19 @@ package com.customerservice.login;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.RadioGroup;
 
+import com.customerservice.R;
+import com.customerservice.receiver.ReceiveMsgRunnable;
+import com.customerservice.recentlist.RecentContactActivity;
 import com.customerservice.utils.AppUtils;
 import com.customerservice.utils.Log;
-import com.customerservice.R;
-import com.customerservice.chat.ChatActivity;
 import com.ioyouyun.wchat.WeimiInstance;
 import com.ioyouyun.wchat.data.AuthResultData;
 import com.ioyouyun.wchat.message.WChatException;
@@ -24,13 +28,43 @@ import com.ioyouyun.wchat.util.DebugConfig;
 public class LoginActivity extends AppCompatActivity {
 
     private ProgressBar progressBar;
+    private TextInputEditText nickNameEdit;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        initView();
+        initData();
+    }
+
+    private void initData() {
+        AppUtils.isOnlinePlatform = false;
+        AppUtils.CUSTOM_SERVICE_ID = AppUtils.CUSTOM_SERVICE_FIXED_ID_TEST;
+
+        String nickName = LoginSharedUtil.INSTANCE.getNickName();
+        if (!TextUtils.isEmpty(nickName)) {
+            nickNameEdit.setText(nickName);
+        }
+    }
+
+    private void initView() {
         setToolBar();
         progressBar = (ProgressBar) findViewById(R.id.pb_login);
+        nickNameEdit = (TextInputEditText) findViewById(R.id.tie_nickname);
+        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.rg_platform);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.rb_online) {
+                    AppUtils.isOnlinePlatform = true;
+                    AppUtils.CUSTOM_SERVICE_ID = AppUtils.CUSTOM_SERVICE_FIXED_ID;
+                } else if (checkedId == R.id.rb_test) {
+                    AppUtils.isOnlinePlatform = false;
+                    AppUtils.CUSTOM_SERVICE_ID = AppUtils.CUSTOM_SERVICE_FIXED_ID_TEST;
+                }
+            }
+        });
     }
 
     protected void setToolBar() {
@@ -50,6 +84,26 @@ public class LoginActivity extends AppCompatActivity {
 
     public void handleLogin(View v) {
         login();
+    }
+
+    private void setNickName(String uid){
+        String nickName = nickNameEdit.getText().toString();
+        if (TextUtils.isEmpty(nickName)) {
+            AppUtils.nickName = uid;
+            LoginSharedUtil.INSTANCE.setNickName("");
+        } else{
+            AppUtils.nickName = nickName;
+            LoginSharedUtil.INSTANCE.setNickName(nickName);
+        }
+    }
+
+    /**
+     * 登录成功后开始接收消息
+     */
+    private void startReveive() {
+        ReceiveMsgRunnable runnable = new ReceiveMsgRunnable(AppUtils.mAppContext);
+        Thread msgThread = new Thread(runnable);
+        msgThread.start();
     }
 
     private void login() {
@@ -76,12 +130,18 @@ public class LoginActivity extends AppCompatActivity {
                     }
                     closeProgress();
                     if (authResultData.success) {
+                        startReveive();
+
+                        // 设置不sycn客服消息
+                        WeimiInstance.getInstance().shieldSyncUserId(AppUtils.CUSTOM_SERVICE_ID);
+                        // 获取未读消息数
+                        WeimiInstance.getInstance().getUnread();
+
                         DebugConfig.DEBUG = true;
                         AppUtils.uid = WeimiInstance.getInstance().getUID();
-                        AppUtils.nickName = AppUtils.uid;
+                        setNickName(AppUtils.uid);
                         Log.logD("登录成功：" + AppUtils.uid);
-                        showUid(AppUtils.uid);
-                        gotoActivity(ChatActivity.class);
+                        gotoActivity(RecentContactActivity.class);
                     } else {
                         Log.logD("登录失败");
                     }
@@ -94,7 +154,7 @@ public class LoginActivity extends AppCompatActivity {
         }).start();
     }
 
-    private void showUid(final String uid){
+    private void showUid(final String uid) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -103,7 +163,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void closeProgress(){
+    private void closeProgress() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {

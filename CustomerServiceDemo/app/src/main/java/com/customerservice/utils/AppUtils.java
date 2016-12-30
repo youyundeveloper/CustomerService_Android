@@ -39,20 +39,24 @@ import java.util.List;
 
 public class AppUtils {
 
-    public static String CLIENT_ID = "1-20521-1b766ad17389c94e1dc1f2615714212a-andriod";
-    public static String SECRET = "d5cf0a5812b4424f582ded05937e4387";
+    public static String CLIENT_ID = "1-20525-4ab3a7c3ddb665945d0074f51e979ef0-andriod";
+    public static String SECRET = "6f3efde9fb49a76ff6bfb257f74f4d5b";
     public static String CLIENT_ID_TEST = "1-20142-2e563db99a8ca41df48973b0c43ea50a-andriod";
     public static String SECRET_TEST = "ace518dab1fde58eacb126df6521d34c";
 
-    public static boolean isOnlinePlatform = false;
+    public static boolean isOnlinePlatform;
     public static Context mAppContext;
     public static String uid; // 用户ID
     public static String nickName; // 用户昵称
     public static String headUrl = "http://avatar.csdn.net/6/A/5/1_y331271939.jpg"; // 用头像
 
-    public static String CUSTOM_SERVICE_ID = "549341"; // 客服ID 549341   mx3:539578  mi2a:562846
+    public static String CUSTOM_SERVICE_ID; // 客服ID
+    public static final String CUSTOM_SERVICE_FIXED_ID = "584612"; // 正式客服id
+    public static final String CUSTOM_SERVICE_FIXED_ID_TEST = "549341"; // 测试客服id
 
     public static final long MSG_TIME_SEPARATE = 300000L; // IM时间间隔5分钟
+
+    public static final String MSG_TYPE_RECV_UNREAD_NUM = "msg_type_recv_unread_num"; // 收到未读消息数
 
     public static final String MSG_TYPE_RECEIVE = "msg_type_receive"; // 收到消息
     public static final String TYPE_MSG = "type_msg";
@@ -63,6 +67,8 @@ public class AppUtils {
 
     public static final String MSG_TYPE_DOWNLOAD_IMAGE_FINISH = "msg_type_download_image_finish"; // 收到大图后更新聊天数据,避免重复下载
     public static final String MSG_TYPE_POSITION = "msg_type_position"; // 收到大图后更新聊天数据,避免重复下载
+
+    public static int unReadNum = 0; // 用于暂时储存未读消息数
 
     public static int mScreenWidth;
     public static int mScreenHeigth;
