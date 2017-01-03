@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         AppUtils.isOnlinePlatform = false;
         AppUtils.CUSTOM_SERVICE_ID = AppUtils.CUSTOM_SERVICE_FIXED_ID_TEST;
 
-        String nickName = LoginSharedUtil.INSTANCE.getNickName();
+        String nickName = LoginSharedUtil.INSTANCE.getNickName(AppUtils.isOnlinePlatform);
         if (!TextUtils.isEmpty(nickName)) {
             nickNameEdit.setText(nickName);
         }
@@ -63,6 +63,7 @@ public class LoginActivity extends AppCompatActivity {
                     AppUtils.isOnlinePlatform = false;
                     AppUtils.CUSTOM_SERVICE_ID = AppUtils.CUSTOM_SERVICE_FIXED_ID_TEST;
                 }
+                nickNameEdit.setText(LoginSharedUtil.INSTANCE.getNickName(AppUtils.isOnlinePlatform));
             }
         });
     }
@@ -90,10 +91,10 @@ public class LoginActivity extends AppCompatActivity {
         String nickName = nickNameEdit.getText().toString();
         if (TextUtils.isEmpty(nickName)) {
             AppUtils.nickName = uid;
-            LoginSharedUtil.INSTANCE.setNickName("");
+            LoginSharedUtil.INSTANCE.setNickName("", AppUtils.isOnlinePlatform);
         } else{
             AppUtils.nickName = nickName;
-            LoginSharedUtil.INSTANCE.setNickName(nickName);
+            LoginSharedUtil.INSTANCE.setNickName(nickName, AppUtils.isOnlinePlatform);
         }
     }
 

@@ -7,7 +7,7 @@ import com.customerservice.utils.AppUtils;
 
 /**
  * Created by Bill on 2016/12/30.
- *
+ * <p>
  * 单例 存储用户昵称
  */
 
@@ -18,6 +18,7 @@ public enum LoginSharedUtil {
     private SharedPreferences sharedPreferences;
     public static final String NAME = "kefu_login_preference";
     public static final String KEY_NICKNAME = "key_nickname";
+    public static final String KEY_NICKNAME_TEST = "key_nickname_test";
 
     private SharedPreferences initShare() {
         if (sharedPreferences == null)
@@ -25,13 +26,19 @@ public enum LoginSharedUtil {
         return sharedPreferences;
     }
 
-    public void setNickName(String nickName) {
+    public void setNickName(String nickName, boolean isOnline) {
         SharedPreferences.Editor editor = initShare().edit();
-        editor.putString(KEY_NICKNAME, nickName);
+        if (isOnline)
+            editor.putString(KEY_NICKNAME, nickName);
+        else
+            editor.putString(KEY_NICKNAME_TEST, nickName);
         editor.commit();
     }
 
-    public String getNickName() {
-        return initShare().getString(KEY_NICKNAME, "");
+    public String getNickName(boolean isOnline) {
+        if (isOnline)
+            return initShare().getString(KEY_NICKNAME, "");
+        else
+            return initShare().getString(KEY_NICKNAME_TEST, "");
     }
 }
