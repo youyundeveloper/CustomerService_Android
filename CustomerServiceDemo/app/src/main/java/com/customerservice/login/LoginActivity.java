@@ -77,7 +77,7 @@ public class LoginActivity extends AppCompatActivity {
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    finish();
+                    System.exit(0);
                 }
             });
         }
@@ -176,7 +176,6 @@ public class LoginActivity extends AppCompatActivity {
     private void gotoActivity(Class cls) {
         Intent intent = new Intent(this, cls);
         startActivity(intent);
-        finish();
     }
 
 }

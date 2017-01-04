@@ -7,18 +7,22 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.customerservice.R;
 import com.customerservice.chat.ChatActivity;
 import com.customerservice.receiver.BroadCastCenter;
 import com.customerservice.utils.AppUtils;
+import com.customerservice.utils.Log;
+import com.ioyouyun.wchat.WeimiInstance;
 
 public class RecentContactActivity extends AppCompatActivity implements View.OnClickListener {
 
     private TextView kfIdText;
     private TextView unreadNumText;
     private View itemLayout;
+    private ProgressBar progressBar;
 
     private MyInnerReceiver receiver;
 
@@ -36,6 +40,29 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver();
+    }
+
+    private void logout() {
+        Log.logD("logout");
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final boolean result = WeimiInstance.getInstance().logout();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(View.GONE);
+                        if (result) {
+                            finish();
+                        } else {
+                            AppUtils.toastMessage("退出登录失败");
+                        }
+                    }
+                });
+            }
+        }).start();
+
     }
 
     @Override
@@ -63,6 +90,17 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
         kfIdText = (TextView) findViewById(R.id.tv_id);
         unreadNumText = (TextView) findViewById(R.id.tv_unread_num);
         itemLayout = findViewById(R.id.rl_item_layout);
+        progressBar = (ProgressBar) findViewById(R.id.pb_logout);
+    }
+
+    @Override
+    public void onBackPressed() {
+        back();
+    }
+
+    private void back() {
+        progressBar.setVisibility(View.VISIBLE);
+        logout();
     }
 
     protected void setToolBar() {
@@ -74,7 +112,7 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    finish();
+                    back();
                 }
             });
         }
