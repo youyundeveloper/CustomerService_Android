@@ -51,7 +51,7 @@ public class AppUtils {
     public static String headUrl = "http://avatar.csdn.net/6/A/5/1_y331271939.jpg"; // 用头像
 
     public static String CUSTOM_SERVICE_ID; // 客服ID
-    public static final String CUSTOM_SERVICE_FIXED_ID = "584612"; // 正式客服id
+    public static final String CUSTOM_SERVICE_FIXED_ID = "584612"; // 正式客服id  // 584612   广帅Id：528532
     public static final String CUSTOM_SERVICE_FIXED_ID_TEST = "549341"; // 测试客服id
 
     public static final long MSG_TIME_SEPARATE = 300000L; // IM时间间隔5分钟
