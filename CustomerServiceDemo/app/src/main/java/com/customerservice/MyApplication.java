@@ -14,7 +14,15 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        initCS();
+    }
+
+    /**
+     * 初始化客服
+     */
+    private void initCS(){
         AppUtils.init(getApplicationContext());
         BroadCastCenter.getInstance().init(getApplicationContext());
     }
+
 }
