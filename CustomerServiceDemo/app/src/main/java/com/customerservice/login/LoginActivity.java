@@ -16,10 +16,17 @@ import com.customerservice.receiver.ReceiveMsgRunnable;
 import com.customerservice.recentlist.RecentContactActivity;
 import com.customerservice.utils.AppUtils;
 import com.customerservice.utils.Log;
+import com.ioyouyun.wchat.ServerType;
 import com.ioyouyun.wchat.WeimiInstance;
 import com.ioyouyun.wchat.data.AuthResultData;
+import com.ioyouyun.wchat.message.HistoryMessage;
 import com.ioyouyun.wchat.message.WChatException;
 import com.ioyouyun.wchat.util.DebugConfig;
+import com.ioyouyun.wchat.util.HttpCallback;
+
+import org.json.JSONObject;
+
+import java.util.List;
 
 /**
  * Created by Bill on 2016/12/8.
@@ -113,39 +120,57 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    AuthResultData authResultData;
                     if (AppUtils.isOnlinePlatform) {
-                        authResultData = WeimiInstance.getInstance().registerApp(
-                                AppUtils.mAppContext,
-                                AppUtils.generateOpenUDID(LoginActivity.this),
-                                AppUtils.CLIENT_ID,
-                                AppUtils.SECRET,
-                                60);
+                        WeimiInstance.getInstance().initSDK(LoginActivity.this, "1.2", ServerType.Online, "cn", "weibo", AppUtils.CLIENT_ID);
                     } else {
-                        authResultData = WeimiInstance.getInstance().testRegisterApp(
-                                AppUtils.mAppContext,
-                                AppUtils.generateOpenUDID(LoginActivity.this),
-                                AppUtils.CLIENT_ID_TEST,
-                                AppUtils.SECRET_TEST,
-                                60);
+                        WeimiInstance.getInstance().initSDK(LoginActivity.this, "1.2", ServerType.Test, "cn", "weibo", AppUtils.CLIENT_ID);
                     }
-                    closeProgress();
-                    if (authResultData.success) {
-                        startReveive();
+                    WeimiInstance.getInstance().registerUid(AppUtils.generateOpenUDID(LoginActivity.this),
+                            AppUtils.CLIENT_ID,
+                            AppUtils.SECRET, new HttpCallback() {
+                                @Override
+                                public void onResponse(String s) {
+                                    try {
+                                        JSONObject responseObject = new JSONObject(s);
+                                        if (responseObject.has("result")) {
+                                            JSONObject resultObject = responseObject.getJSONObject("result");
+                                            if (resultObject.has("refresh_token")
+                                                    && resultObject.has("access_token")) {
+                                                AuthResultData resultData = WeimiInstance.getInstance().oauthUser(resultObject.getString("access_token"), resultObject.getString("refresh_token"), false, 30);
+                                                closeProgress();
+                                                if (resultData.success) {
+                                                    startReveive();
 
-                        // 设置不sycn客服消息
-                        WeimiInstance.getInstance().shieldSyncUserId(AppUtils.CUSTOM_SERVICE_ID);
-                        // 获取未读消息数
-                        WeimiInstance.getInstance().getUnread();
+                                                    // 设置不sycn客服消息
+                                                    WeimiInstance.getInstance().shieldSyncUserId(AppUtils.CUSTOM_SERVICE_ID);
+                                                    // 获取未读消息数
+                                                    WeimiInstance.getInstance().getUnread();
 
-                        DebugConfig.DEBUG = true;
-                        AppUtils.uid = WeimiInstance.getInstance().getUID();
-                        setNickName(AppUtils.uid);
-                        Log.logD("登录成功：" + AppUtils.uid);
-                        gotoActivity(RecentContactActivity.class);
-                    } else {
-                        Log.logD("登录失败");
-                    }
+                                                    DebugConfig.DEBUG = true;
+                                                    AppUtils.uid = WeimiInstance.getInstance().getUID();
+                                                    setNickName(AppUtils.uid);
+                                                    Log.logD("登录成功：" + AppUtils.uid);
+                                                    gotoActivity(RecentContactActivity.class);
+                                                } else {
+                                                    Log.logD("登录失败");
+                                                }
+                                            }
+                                        }
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                @Override
+                                public void onResponseHistory(List<HistoryMessage> list) {
+
+                                }
+
+                                @Override
+                                public void onError(Exception e) {
+
+                                }
+                            });
                 } catch (WChatException e) {
                     e.printStackTrace();
                     Log.logD("登录失败");
