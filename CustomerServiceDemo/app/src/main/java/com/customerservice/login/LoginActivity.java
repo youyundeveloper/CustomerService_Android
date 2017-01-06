@@ -119,23 +119,29 @@ public class LoginActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                String clientId;
+                String sedret;
                 try {
                     if (AppUtils.isOnlinePlatform) {
-                        WeimiInstance.getInstance().initSDK(LoginActivity.this, "1.2", ServerType.Online, "cn", "weibo", AppUtils.CLIENT_ID);
+                        clientId = AppUtils.CLIENT_ID;
+                        sedret = AppUtils.SECRET;
+                        WeimiInstance.getInstance().initSDK(LoginActivity.this, "1.2", ServerType.Online, "cn", "weibo", clientId);
                     } else {
-                        WeimiInstance.getInstance().initSDK(LoginActivity.this, "1.2", ServerType.Test, "cn", "weibo", AppUtils.CLIENT_ID);
+                        clientId = AppUtils.CLIENT_ID_TEST;
+                        sedret = AppUtils.SECRET_TEST;
+                        WeimiInstance.getInstance().initSDK(LoginActivity.this, "1.2", ServerType.Test, "cn", "weibo", clientId);
                     }
                     WeimiInstance.getInstance().registerUid(AppUtils.generateOpenUDID(LoginActivity.this),
-                            AppUtils.CLIENT_ID,
-                            AppUtils.SECRET, new HttpCallback() {
+                            clientId, sedret,
+                            new HttpCallback() {
                                 @Override
                                 public void onResponse(String s) {
                                     try {
                                         JSONObject responseObject = new JSONObject(s);
                                         if (responseObject.has("result")) {
                                             JSONObject resultObject = responseObject.getJSONObject("result");
-                                            if (resultObject.has("refresh_token")
-                                                    && resultObject.has("access_token")) {
+                                            Log.logD("获取token成功：" + resultObject.getString("uid"));
+                                            if (resultObject.has("refresh_token") && resultObject.has("access_token")) {
                                                 AuthResultData resultData = WeimiInstance.getInstance().oauthUser(resultObject.getString("access_token"), resultObject.getString("refresh_token"), false, 30);
                                                 closeProgress();
                                                 if (resultData.success) {
