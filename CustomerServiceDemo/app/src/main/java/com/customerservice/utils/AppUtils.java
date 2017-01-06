@@ -41,8 +41,12 @@ public class AppUtils {
 
     public static String CLIENT_ID = "1-20525-4ab3a7c3ddb665945d0074f51e979ef0-andriod";
     public static String SECRET = "6f3efde9fb49a76ff6bfb257f74f4d5b";
-    public static String CLIENT_ID_TEST = "1-20142-2e563db99a8ca41df48973b0c43ea50a-andriod";
-    public static String SECRET_TEST = "ace518dab1fde58eacb126df6521d34c";
+    /**
+     * 游云测试：1-20142-2e563db99a8ca41df48973b0c43ea50a-andriod   ace518dab1fde58eacb126df6521d34c  549341
+     * 库拍：    1-20119-f36892c6a26908e6e1b8e15f98d16ba7-andriod   08ff34703ff6ad82c9e8089ac272b4e9  652747
+     */
+    public static String CLIENT_ID_TEST = "1-20119-f36892c6a26908e6e1b8e15f98d16ba7-andriod";
+    public static String SECRET_TEST = "08ff34703ff6ad82c9e8089ac272b4e9";
 
     public static boolean isOnlinePlatform;
     public static Context mAppContext;
@@ -51,8 +55,8 @@ public class AppUtils {
     public static String headUrl = "http://avatar.csdn.net/6/A/5/1_y331271939.jpg"; // 用头像
 
     public static String CUSTOM_SERVICE_ID; // 客服ID
-    public static final String CUSTOM_SERVICE_FIXED_ID = "584612"; // 正式客服id
-    public static final String CUSTOM_SERVICE_FIXED_ID_TEST = "549341"; // 测试客服id
+    public static final String CUSTOM_SERVICE_FIXED_ID = "584612"; // 正式客服id  // 584612
+    public static final String CUSTOM_SERVICE_FIXED_ID_TEST = "652747"; // 测试客服id  // 549341
 
     public static final long MSG_TIME_SEPARATE = 300000L; // IM时间间隔5分钟
 
@@ -73,7 +77,7 @@ public class AppUtils {
     public static int mScreenWidth;
     public static int mScreenHeigth;
 
-    public static void init(Context context){
+    public static void init(Context context) {
         mAppContext = context;
         mScreenWidth = mAppContext.getResources().getDisplayMetrics().widthPixels;
         mScreenHeigth = mAppContext.getResources().getDisplayMetrics().heightPixels;
@@ -456,7 +460,7 @@ public class AppUtils {
             Bitmap destBm = BitmapFactory.decodeFile(path, newOpts);
 
 			/*if (srcWidth < srcHeight) {
-				Matrix matrix = new Matrix(); // 将图像顺时针旋转90度
+                Matrix matrix = new Matrix(); // 将图像顺时针旋转90度
 				matrix.setRotate(270); // 生成旋转后的图像
 				destBm = Bitmap.createBitmap(destBm, 0, 0, destBm.getWidth(),destBm.getHeight(), matrix, false);
 			}*/
