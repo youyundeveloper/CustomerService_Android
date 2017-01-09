@@ -2,8 +2,8 @@ package com.customerservice;
 
 import android.app.Application;
 
-import com.customerservice.receiver.BroadCastCenter;
-import com.customerservice.utils.AppUtils;
+import com.customerservice.receiver.CsBroadCastCenter;
+import com.customerservice.utils.CsAppUtils;
 
 /**
  * Created by Bill on 2016/12/8.
@@ -21,8 +21,8 @@ public class MyApplication extends Application {
      * 初始化客服
      */
     private void initCS(){
-        AppUtils.init(getApplicationContext());
-        BroadCastCenter.getInstance().init(getApplicationContext());
+        CsAppUtils.init(getApplicationContext());
+        CsBroadCastCenter.getInstance().init(getApplicationContext());
     }
 
 }

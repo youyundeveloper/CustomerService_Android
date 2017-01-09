@@ -3,7 +3,7 @@ package com.customerservice.login;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.customerservice.utils.AppUtils;
+import com.customerservice.utils.CsAppUtils;
 
 /**
  * Created by Bill on 2016/12/30.
@@ -22,7 +22,7 @@ public enum LoginSharedUtil {
 
     private SharedPreferences initShare() {
         if (sharedPreferences == null)
-            sharedPreferences = AppUtils.mAppContext.getSharedPreferences(NAME, Context.MODE_PRIVATE);
+            sharedPreferences = CsAppUtils.mAppContext.getSharedPreferences(NAME, Context.MODE_PRIVATE);
         return sharedPreferences;
     }
 

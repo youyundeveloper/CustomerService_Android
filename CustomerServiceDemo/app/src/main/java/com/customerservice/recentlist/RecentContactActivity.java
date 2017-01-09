@@ -11,10 +11,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.customerservice.R;
-import com.customerservice.chat.ChatActivity;
-import com.customerservice.receiver.BroadCastCenter;
-import com.customerservice.utils.AppUtils;
-import com.customerservice.utils.Log;
+import com.customerservice.chat.CsCsChatActivity;
+import com.customerservice.receiver.CsBroadCastCenter;
+import com.customerservice.utils.CsAppUtils;
+import com.customerservice.utils.CsLog;
 import com.ioyouyun.wchat.WeimiInstance;
 
 public class RecentContactActivity extends AppCompatActivity implements View.OnClickListener {
@@ -43,7 +43,7 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
     }
 
     private void logout() {
-        Log.logD("logout");
+        CsLog.logD("logout");
 
         new Thread(new Runnable() {
             @Override
@@ -56,7 +56,7 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
                         if (result) {
                             finish();
                         } else {
-                            AppUtils.toastMessage("退出登录失败");
+                            CsAppUtils.toastMessage("退出登录失败");
                         }
                     }
                 });
@@ -70,15 +70,15 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
         if (v == itemLayout) {
             unreadNumText.setVisibility(View.GONE);
 
-            Intent intent = new Intent(this, ChatActivity.class);
+            Intent intent = new Intent(this, CsCsChatActivity.class);
             startActivity(intent);
         }
     }
 
     private void initData() {
-        kfIdText.setText(AppUtils.CUSTOM_SERVICE_ID);
+        kfIdText.setText(CsAppUtils.CUSTOM_SERVICE_ID);
 
-        showUnRead(AppUtils.unReadNum);
+        showUnRead(CsAppUtils.unReadNum);
     }
 
     private void addListener() {
@@ -108,7 +108,7 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
         if (toolbar != null) {
             toolbar.setTitle("");
             setSupportActionBar(toolbar);
-            toolbar.setNavigationIcon(R.drawable.back);
+            toolbar.setNavigationIcon(R.drawable.cs_back);
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -133,7 +133,7 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
      */
     private void registerReceiver() {
         receiver = new MyInnerReceiver();
-        BroadCastCenter.getInstance().registerReceiver(receiver, AppUtils.MSG_TYPE_RECV_UNREAD_NUM);
+        CsBroadCastCenter.getInstance().registerReceiver(receiver, CsAppUtils.MSG_TYPE_RECV_UNREAD_NUM);
     }
 
     /**
@@ -141,7 +141,7 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
      */
     private void unregisterReceiver() {
         if (receiver != null)
-            BroadCastCenter.getInstance().unregisterReceiver(receiver);
+            CsBroadCastCenter.getInstance().unregisterReceiver(receiver);
     }
 
     class MyInnerReceiver extends BroadcastReceiver {
@@ -149,9 +149,9 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (AppUtils.MSG_TYPE_RECV_UNREAD_NUM.equals(action)) {
-                AppUtils.unReadNum = 0;
-                int num = intent.getIntExtra(AppUtils.TYPE_MSG, 0);
+            if (CsAppUtils.MSG_TYPE_RECV_UNREAD_NUM.equals(action)) {
+                CsAppUtils.unReadNum = 0;
+                int num = intent.getIntExtra(CsAppUtils.TYPE_MSG, 0);
                 showUnRead(num);
             }
         }

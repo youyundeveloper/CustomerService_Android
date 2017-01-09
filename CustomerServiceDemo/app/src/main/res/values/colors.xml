@@ -6,21 +6,21 @@
 
     <color name="opacity_5_black">#80000000</color>
 
-    <color name="color_white">#fff</color>
-    <color name="color_black">#000</color>
-    <color name="color_robot_bg">#0094ff</color>
-    <color name="color_people_bg">#4DCCCCCC</color>
-    <color name="color_robot_font">#333</color>
-    <color name="color_people_font">#fff</color>
-    <color name="color_notice_font">#fff</color>
-    <color name="color_notice_bg">#40000000</color>
-    <color name="color_time_font">#999</color>
-    <color name="color_album_font">#999</color>
-    <color name="color_edit_bg">#999</color>
-    <color name="color_chat_line">#c0c0c0</color>
-    <color name="color_input_outsize_bg">#ccffffff</color>
-    <color name="color_more_bg">#f3f3f3</color>
-    <color name="color_toolbar_bg">#D9FFFFFF</color>
-    <color name="color_title">#333</color>
+    <color name="cs_color_white">#fff</color>
+    <color name="cs_color_black">#000</color>
+    <color name="cs_color_robot_bg">#0094ff</color>
+    <color name="cs_color_people_bg">#4DCCCCCC</color>
+    <color name="cs_color_robot_font">#333</color>
+    <color name="cs_color_people_font">#fff</color>
+    <color name="cs_color_notice_font">#fff</color>
+    <color name="cs_color_notice_bg">#40000000</color>
+    <color name="cs_color_time_font">#999</color>
+    <color name="cs_color_album_font">#999</color>
+    <color name="cs_color_edit_bg">#999</color>
+    <color name="cs_color_chat_line">#c0c0c0</color>
+    <color name="cs_color_input_outsize_bg">#ccffffff</color>
+    <color name="cs_color_more_bg">#f3f3f3</color>
+    <color name="cs_color_toolbar_bg">#D9FFFFFF</color>
+    <color name="cs_color_title">#333</color>
 
 </resources>

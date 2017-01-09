@@ -31,11 +31,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".chat.ChatActivity"
+            android:name=".chat.CsCsChatActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
-            android:name=".chat.BitImageActivity"
+            android:name=".chat.CsBitImageActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".recentlist.RecentContactActivity"

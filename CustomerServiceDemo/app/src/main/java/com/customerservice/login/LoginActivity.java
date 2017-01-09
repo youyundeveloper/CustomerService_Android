@@ -12,10 +12,10 @@ import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 
 import com.customerservice.R;
-import com.customerservice.receiver.ReceiveMsgRunnable;
+import com.customerservice.receiver.CsReceiveMsgRunnable;
 import com.customerservice.recentlist.RecentContactActivity;
-import com.customerservice.utils.AppUtils;
-import com.customerservice.utils.Log;
+import com.customerservice.utils.CsAppUtils;
+import com.customerservice.utils.CsLog;
 import com.ioyouyun.wchat.ServerType;
 import com.ioyouyun.wchat.WeimiInstance;
 import com.ioyouyun.wchat.data.AuthResultData;
@@ -46,10 +46,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        AppUtils.isOnlinePlatform = false;
-        AppUtils.CUSTOM_SERVICE_ID = AppUtils.CUSTOM_SERVICE_FIXED_ID_TEST;
+        CsAppUtils.isOnlinePlatform = false;
+        CsAppUtils.CUSTOM_SERVICE_ID = CsAppUtils.CUSTOM_SERVICE_FIXED_ID_TEST;
 
-        String nickName = LoginSharedUtil.INSTANCE.getNickName(AppUtils.isOnlinePlatform);
+        String nickName = LoginSharedUtil.INSTANCE.getNickName(CsAppUtils.isOnlinePlatform);
         if (!TextUtils.isEmpty(nickName)) {
             nickNameEdit.setText(nickName);
         }
@@ -64,13 +64,13 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.rb_online) {
-                    AppUtils.isOnlinePlatform = true;
-                    AppUtils.CUSTOM_SERVICE_ID = AppUtils.CUSTOM_SERVICE_FIXED_ID;
+                    CsAppUtils.isOnlinePlatform = true;
+                    CsAppUtils.CUSTOM_SERVICE_ID = CsAppUtils.CUSTOM_SERVICE_FIXED_ID;
                 } else if (checkedId == R.id.rb_test) {
-                    AppUtils.isOnlinePlatform = false;
-                    AppUtils.CUSTOM_SERVICE_ID = AppUtils.CUSTOM_SERVICE_FIXED_ID_TEST;
+                    CsAppUtils.isOnlinePlatform = false;
+                    CsAppUtils.CUSTOM_SERVICE_ID = CsAppUtils.CUSTOM_SERVICE_FIXED_ID_TEST;
                 }
-                nickNameEdit.setText(LoginSharedUtil.INSTANCE.getNickName(AppUtils.isOnlinePlatform));
+                nickNameEdit.setText(LoginSharedUtil.INSTANCE.getNickName(CsAppUtils.isOnlinePlatform));
             }
         });
     }
@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
         if (toolbar != null) {
             toolbar.setTitle("");
             setSupportActionBar(toolbar);
-            toolbar.setNavigationIcon(R.drawable.back);
+            toolbar.setNavigationIcon(R.drawable.cs_back);
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -97,11 +97,11 @@ public class LoginActivity extends AppCompatActivity {
     private void setNickName(String uid){
         String nickName = nickNameEdit.getText().toString();
         if (TextUtils.isEmpty(nickName)) {
-            AppUtils.nickName = uid;
-            LoginSharedUtil.INSTANCE.setNickName("", AppUtils.isOnlinePlatform);
+            CsAppUtils.nickName = uid;
+            LoginSharedUtil.INSTANCE.setNickName("", CsAppUtils.isOnlinePlatform);
         } else{
-            AppUtils.nickName = nickName;
-            LoginSharedUtil.INSTANCE.setNickName(nickName, AppUtils.isOnlinePlatform);
+            CsAppUtils.nickName = nickName;
+            LoginSharedUtil.INSTANCE.setNickName(nickName, CsAppUtils.isOnlinePlatform);
         }
     }
 
@@ -109,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
      * 登录成功后开始接收消息
      */
     private void startReveive() {
-        ReceiveMsgRunnable runnable = new ReceiveMsgRunnable(AppUtils.mAppContext);
+        CsReceiveMsgRunnable runnable = new CsReceiveMsgRunnable(CsAppUtils.mAppContext);
         Thread msgThread = new Thread(runnable);
         msgThread.start();
     }
@@ -122,16 +122,16 @@ public class LoginActivity extends AppCompatActivity {
                 String clientId;
                 String sedret;
                 try {
-                    if (AppUtils.isOnlinePlatform) {
-                        clientId = AppUtils.CLIENT_ID;
-                        sedret = AppUtils.SECRET;
+                    if (CsAppUtils.isOnlinePlatform) {
+                        clientId = CsAppUtils.CLIENT_ID;
+                        sedret = CsAppUtils.SECRET;
                         WeimiInstance.getInstance().initSDK(LoginActivity.this, "1.2", ServerType.Online, "cn", "weibo", clientId);
                     } else {
-                        clientId = AppUtils.CLIENT_ID_TEST;
-                        sedret = AppUtils.SECRET_TEST;
+                        clientId = CsAppUtils.CLIENT_ID_TEST;
+                        sedret = CsAppUtils.SECRET_TEST;
                         WeimiInstance.getInstance().initSDK(LoginActivity.this, "1.2", ServerType.Test, "cn", "weibo", clientId);
                     }
-                    WeimiInstance.getInstance().registerUid(AppUtils.generateOpenUDID(LoginActivity.this),
+                    WeimiInstance.getInstance().registerUid(CsAppUtils.generateOpenUDID(LoginActivity.this),
                             clientId, sedret,
                             new HttpCallback() {
                                 @Override
@@ -140,7 +140,7 @@ public class LoginActivity extends AppCompatActivity {
                                         JSONObject responseObject = new JSONObject(s);
                                         if (responseObject.has("result")) {
                                             JSONObject resultObject = responseObject.getJSONObject("result");
-                                            Log.logD("获取token成功：" + resultObject.getString("uid"));
+                                            CsLog.logD("获取token成功：" + resultObject.getString("uid"));
                                             if (resultObject.has("refresh_token") && resultObject.has("access_token")) {
                                                 AuthResultData resultData = WeimiInstance.getInstance().oauthUser(resultObject.getString("access_token"), resultObject.getString("refresh_token"), false, 30);
                                                 closeProgress();
@@ -148,17 +148,17 @@ public class LoginActivity extends AppCompatActivity {
                                                     startReveive();
 
                                                     // 设置不sycn客服消息
-                                                    WeimiInstance.getInstance().shieldSyncUserId(AppUtils.CUSTOM_SERVICE_ID);
+                                                    WeimiInstance.getInstance().shieldSyncUserId(CsAppUtils.CUSTOM_SERVICE_ID);
                                                     // 获取未读消息数
                                                     WeimiInstance.getInstance().getUnread();
 
                                                     DebugConfig.DEBUG = true;
-                                                    AppUtils.uid = WeimiInstance.getInstance().getUID();
-                                                    setNickName(AppUtils.uid);
-                                                    Log.logD("登录成功：" + AppUtils.uid);
+                                                    CsAppUtils.uid = WeimiInstance.getInstance().getUID();
+                                                    setNickName(CsAppUtils.uid);
+                                                    CsLog.logD("登录成功：" + CsAppUtils.uid);
                                                     gotoActivity(RecentContactActivity.class);
                                                 } else {
-                                                    Log.logD("登录失败");
+                                                    CsLog.logD("登录失败");
                                                 }
                                             }
                                         }
@@ -179,7 +179,7 @@ public class LoginActivity extends AppCompatActivity {
                             });
                 } catch (WChatException e) {
                     e.printStackTrace();
-                    Log.logD("登录失败");
+                    CsLog.logD("登录失败");
                     closeProgress();
                 }
             }
@@ -190,7 +190,7 @@ public class LoginActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                AppUtils.toastMessage(uid);
+                CsAppUtils.toastMessage(uid);
             }
         });
     }
