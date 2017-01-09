@@ -174,14 +174,13 @@ public class ReceiveMsgRunnable implements Runnable {
     private void fileMessageMethod(WeimiNotice weimiNotice) {
         CsLog.logD("收到一条文件消息");
         FileMessage fileMessage = (FileMessage) weimiNotice.getObject();
-        if (MetaMessageType.image == fileMessage.type) {
-            String fromId = fileMessage.fromuid;
-            if (CsAppUtils.CUSTOM_SERVICE_ID.equals(fromId)) {
-                receiveImage(fileMessage);
-            }else{
-                CsLog.logD("收到" + fromId + "发来的文件消息");
+        String fromId = fileMessage.fromuid;
+        if (CsAppUtils.CUSTOM_SERVICE_ID.equals(fromId)) {
+            if (MetaMessageType.image == fileMessage.type) {
+                csReceiveImage(fileMessage);
             }
-
+        } else {
+            CsLog.logD("收到" + fromId + "发来的文件消息");
         }
     }
 
@@ -189,7 +188,7 @@ public class ReceiveMsgRunnable implements Runnable {
      * 接收图片
      * @param fileMessage
      */
-    private void receiveImage(FileMessage fileMessage) {
+    private void csReceiveImage(FileMessage fileMessage) {
         String thumbnailPath = "";
         if (null != fileMessage.thumbData) {
             thumbnailPath = CsAppUtils.getThumbnailPath(fileMessage.fromuid, fileMessage.msgId);
@@ -239,38 +238,42 @@ public class ReceiveMsgRunnable implements Runnable {
         String fromId = textMessage.fromuid;
         // 判断是不是客服下发的消息，其他人发的消息这里不做处理
         if(CsAppUtils.CUSTOM_SERVICE_ID.equals(fromId)){
-            CsLog.logD("收到一条文本消息：" + textMessage.text);
-            CsJsonParentEntity entity = CsAppUtils.parseRobotMsg(textMessage.text);
-            if (entity != null) {
-                CsChatEntity chatEntity = new CsChatEntity();
-                chatEntity.msgId = textMessage.msgId;
-                chatEntity.msgType = CsChatEntity.CHAT_TYPE_ROBOT_TEXT;
-                if(entity instanceof CsNoticeMsgEntity){
-                    chatEntity.msgType = CsChatEntity.CHAT_TYPE_NOTICE;
-                } else {
-                    String padding = new String(textMessage.padding);
-                    CsLog.logD("额外消息：" + padding);
-                    if (CsAppUtils.isJSONObject(padding)) {
-                        try {
-                            JSONObject object = new JSONObject(padding);
-                            if (object != null) {
-                                chatEntity.nickName = object.optString(CsAppUtils.NICK_NAME);
-                                chatEntity.headUrl = object.optString(CsAppUtils.HEAD_URL);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                chatEntity.time = textMessage.time;
-                chatEntity.csJsonParentEntity = entity;
-
-                setBroadCast(CsAppUtils.MSG_TYPE_RECEIVE, chatEntity);
-            }
+            csTextMessageMethod(textMessage);
         } else {
             CsLog.logD("收到" + fromId + "发来的文本消息");
         }
 
+    }
+
+    private void csTextMessageMethod(TextMessage textMessage) {
+        CsLog.logD("收到一条文本消息：" + textMessage.text);
+        CsJsonParentEntity entity = CsAppUtils.parseRobotMsg(textMessage.text);
+        if (entity != null) {
+            CsChatEntity chatEntity = new CsChatEntity();
+            chatEntity.msgId = textMessage.msgId;
+            chatEntity.msgType = CsChatEntity.CHAT_TYPE_ROBOT_TEXT;
+            if (entity instanceof CsNoticeMsgEntity) {
+                chatEntity.msgType = CsChatEntity.CHAT_TYPE_NOTICE;
+            } else {
+                String padding = new String(textMessage.padding);
+                CsLog.logD("额外消息：" + padding);
+                if (CsAppUtils.isJSONObject(padding)) {
+                    try {
+                        JSONObject object = new JSONObject(padding);
+                        if (object != null) {
+                            chatEntity.nickName = object.optString(CsAppUtils.NICK_NAME);
+                            chatEntity.headUrl = object.optString(CsAppUtils.HEAD_URL);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            chatEntity.time = textMessage.time;
+            chatEntity.csJsonParentEntity = entity;
+
+            setBroadCast(CsAppUtils.MSG_TYPE_RECEIVE, chatEntity);
+        }
     }
 
     /**
