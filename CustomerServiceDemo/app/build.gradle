@@ -6,7 +6,7 @@ android {
     defaultConfig {
         applicationId "com.customerservice"
         minSdkVersion 15
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 12
         versionName "1.0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

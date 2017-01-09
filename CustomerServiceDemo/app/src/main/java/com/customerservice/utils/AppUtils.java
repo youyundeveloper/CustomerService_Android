@@ -2,12 +2,14 @@ package com.customerservice.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.os.Environment;
 import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -117,6 +119,32 @@ public class AppUtils {
         else
             toast.setText(msg);
         toast.show();
+    }
+
+    //////////////////////////////////////Android 6.0 运行时权限/////////////////////////////////////////
+
+    public interface PermissionCallback{
+        void onComplete(int requestCode);
+    }
+
+    public static void requestPermission(final Activity activity, final int requestCode, PermissionCallback callback, String... permissions) {
+        List<String> deniedPermissions = findDeniedPermissions(activity, permissions);
+        if (deniedPermissions.size() > 0) {
+            ActivityCompat.requestPermissions(activity, deniedPermissions.toArray(new String[deniedPermissions.size()]), requestCode);
+        } else {
+            if(callback != null)
+                callback.onComplete(requestCode);
+        }
+    }
+
+    private static List<String> findDeniedPermissions(Activity activity, String... permission) {
+        List<String> denyPermissions = new ArrayList<>();
+        for (String value : permission) {
+            if (ActivityCompat.checkSelfPermission(activity, value) != PackageManager.PERMISSION_GRANTED) {
+                denyPermissions.add(value);
+            }
+        }
+        return denyPermissions;
     }
 
     //////////////////////////////////////客服JSON消息处理/////////////////////////////////////////

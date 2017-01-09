@@ -94,7 +94,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
     /**
      * 进入房间连接客服
      */
-    private void connect(){
+    private void connect() {
         // 取消设置不sycn客服消息
         WeimiInstance.getInstance().cancleShieldSyncUserId(AppUtils.CUSTOM_SERVICE_ID);
         presenter.sendMixedText(1);
@@ -103,7 +103,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
     /**
      * 离开房间调用告诉客服已断开
      */
-    private void disconnect(){
+    private void disconnect() {
         presenter.sendMixedText(2);
         // 设置不sycn客服消息
         WeimiInstance.getInstance().shieldSyncUserId(AppUtils.CUSTOM_SERVICE_ID);
@@ -183,10 +183,12 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
             }
 
             @Override
-            public void onTouchEvent(RecyclerView rv, MotionEvent e) {}
+            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+            }
 
             @Override
-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {}
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+            }
         });
         moreBtn.setOnClickListener(this);
         sendBtn.setOnClickListener(this);
@@ -195,7 +197,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
         backBtn.setOnClickListener(this);
     }
 
-    private void closeBoard(){
+    private void closeBoard() {
         if (isSoftInputShown()) {
             hideSoftInput(chatMsgEdit);
         }
@@ -236,6 +238,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
      * 拍照
      */
     private File cameraFile;
+
     private void selectPicFromCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         long ts = System.currentTimeMillis();
@@ -302,7 +305,7 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
             selectPicFromLocal();
         } else if (view == takePhotoBtn) {
             selectPicFromCamera();
-        } else if(view == backBtn){
+        } else if (view == backBtn) {
             onBackPressed();
         }
     }
