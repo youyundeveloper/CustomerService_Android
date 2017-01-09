@@ -238,7 +238,6 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
      * 拍照
      */
     private File cameraFile;
-
     private void selectPicFromCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         long ts = System.currentTimeMillis();
