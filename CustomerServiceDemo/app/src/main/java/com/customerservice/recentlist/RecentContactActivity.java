@@ -11,7 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.customerservice.R;
-import com.customerservice.chat.CsCsChatActivity;
+import com.customerservice.chat.CsChatActivity;
 import com.customerservice.receiver.CsBroadCastCenter;
 import com.customerservice.utils.CsAppUtils;
 import com.customerservice.utils.CsLog;
@@ -70,7 +70,7 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
         if (v == itemLayout) {
             unreadNumText.setVisibility(View.GONE);
 
-            Intent intent = new Intent(this, CsCsChatActivity.class);
+            Intent intent = new Intent(this, CsChatActivity.class);
             startActivity(intent);
         }
     }

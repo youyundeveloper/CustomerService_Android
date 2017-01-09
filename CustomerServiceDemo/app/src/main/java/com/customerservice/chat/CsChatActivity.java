@@ -38,7 +38,7 @@ import java.util.List;
  * Created by Bill on 2016/12/8.
  */
 
-public class CsCsChatActivity extends AppCompatActivity implements CsChatView, View.OnClickListener {
+public class CsChatActivity extends AppCompatActivity implements CsChatView, View.OnClickListener {
 
     public static final int REQUEST_CODE_CAMERA = 1001;
     public static final int REQUEST_CODE_LOCAL = 1002;

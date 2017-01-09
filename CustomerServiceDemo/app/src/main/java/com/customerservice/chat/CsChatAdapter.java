@@ -226,7 +226,7 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             peopleImageHolder.imageLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    CsBitImageActivity.startActivity(context, csFileEntity, position);
+                    CsBigImageActivity.startActivity(context, csFileEntity, position);
                 }
             });
         }else if(holder instanceof RobotImageHolder){
@@ -259,7 +259,7 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             robotImageHolder.imgParent.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    CsBitImageActivity.startActivity(context, csFileEntity, position);
+                    CsBigImageActivity.startActivity(context, csFileEntity, position);
                 }
             });
         }else if (holder instanceof NoticeHolder) {

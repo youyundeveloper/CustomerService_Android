@@ -27,7 +27,7 @@ import com.ioyouyun.wchat.message.WChatException;
  * 查看大图
  */
 
-public class CsBitImageActivity extends AppCompatActivity {
+public class CsBigImageActivity extends AppCompatActivity {
 
     private final static String FILE_ENTITY = "file_entity";
     private final static String CHAT_POSITION = "chat_position";
@@ -99,7 +99,7 @@ public class CsBitImageActivity extends AppCompatActivity {
     }
 
     public static void startActivity(Context activity, CsFileEntity csFileEntity, int position) {
-        Intent intent = new Intent(activity, CsBitImageActivity.class);
+        Intent intent = new Intent(activity, CsBigImageActivity.class);
         intent.putExtra(FILE_ENTITY, csFileEntity);
         intent.putExtra(CHAT_POSITION, position);
         activity.startActivity(intent);
