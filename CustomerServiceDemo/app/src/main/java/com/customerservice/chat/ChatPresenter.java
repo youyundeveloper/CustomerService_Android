@@ -55,6 +55,10 @@ public class ChatPresenter {
         registerReceiver();
     }
 
+    public List<ChatEntity> getChatList(){
+        return chatMsgEntityList;
+    }
+
     /**
      * 注册本地广播
      */

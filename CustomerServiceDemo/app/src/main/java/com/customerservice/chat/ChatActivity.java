@@ -165,14 +165,13 @@ public class ChatActivity extends AppCompatActivity implements ChatView, View.On
 
             }
         });
-        chatMsgEdit.setOnTouchListener(new View.OnTouchListener() {
+        chatMsgEdit.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
+            public void onClick(View v) {
                 if (isShowMore) {
                     isShowMore = false;
                     moreLayout.setVisibility(View.GONE);
                 }
-                return false;
             }
         });
         recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
