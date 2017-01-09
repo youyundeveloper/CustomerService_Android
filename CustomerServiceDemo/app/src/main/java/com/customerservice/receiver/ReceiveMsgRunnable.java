@@ -30,14 +30,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by Bill on 2016/12/8.
  */
 
-public class CsReceiveMsgRunnable implements Runnable {
+public class ReceiveMsgRunnable implements Runnable {
 
     public static Map<String, List<Integer>> fileSend = new ConcurrentHashMap<>();
     public static Map<String, Integer> fileSendCount = new ConcurrentHashMap<>();
 
     private Context context;
 
-    public CsReceiveMsgRunnable(Context context) {
+    public ReceiveMsgRunnable(Context context) {
         this.context = context.getApplicationContext();
     }
 

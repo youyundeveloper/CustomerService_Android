@@ -13,7 +13,7 @@ import com.customerservice.chat.jsonmodel.CsTextMsgEntity;
 import com.customerservice.chat.model.CsChatEntity;
 import com.customerservice.chat.model.CsFileEntity;
 import com.customerservice.receiver.CsBroadCastCenter;
-import com.customerservice.receiver.CsReceiveMsgRunnable;
+import com.customerservice.receiver.ReceiveMsgRunnable;
 import com.customerservice.utils.CsAppUtils;
 import com.customerservice.utils.CsLog;
 import com.ioyouyun.wchat.WeimiInstance;
@@ -120,8 +120,8 @@ public class CsChatPresenter {
             for (int i = 1; i <= sliceCount; i++) {
                 list.add(i);
             }
-            CsReceiveMsgRunnable.fileSend.put(msgId, list);
-            CsReceiveMsgRunnable.fileSendCount.put(msgId, sliceCount);
+            ReceiveMsgRunnable.fileSend.put(msgId, list);
+            ReceiveMsgRunnable.fileSendCount.put(msgId, sliceCount);
 
             refreshUI(chatEntity);
         }

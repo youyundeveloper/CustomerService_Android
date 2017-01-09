@@ -12,7 +12,7 @@ import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 
 import com.customerservice.R;
-import com.customerservice.receiver.CsReceiveMsgRunnable;
+import com.customerservice.receiver.ReceiveMsgRunnable;
 import com.customerservice.recentlist.RecentContactActivity;
 import com.customerservice.utils.CsAppUtils;
 import com.customerservice.utils.CsLog;
@@ -109,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
      * 登录成功后开始接收消息
      */
     private void startReveive() {
-        CsReceiveMsgRunnable runnable = new CsReceiveMsgRunnable(CsAppUtils.mAppContext);
+        ReceiveMsgRunnable runnable = new ReceiveMsgRunnable(CsAppUtils.mAppContext);
         Thread msgThread = new Thread(runnable);
         msgThread.start();
     }
