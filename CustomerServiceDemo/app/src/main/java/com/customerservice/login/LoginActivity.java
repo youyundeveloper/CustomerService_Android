@@ -1,7 +1,10 @@
 package com.customerservice.login;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
@@ -34,6 +37,8 @@ import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
+    public static final int REQUEST_CODE_WRITE_SD = 1001;
+
     private ProgressBar progressBar;
     private TextInputEditText nickNameEdit;
 
@@ -43,6 +48,35 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         initView();
         initData();
+
+        // 申请SD卡权限
+        CsAppUtils.requestPermission(this, REQUEST_CODE_WRITE_SD, callback, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_CODE_WRITE_SD) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                requestWriteSdSuccess();
+            } else {
+                CsAppUtils.toastMessage("Permission Denied");
+            }
+            return;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    CsAppUtils.PermissionCallback callback = new CsAppUtils.PermissionCallback() {
+        @Override
+        public void onComplete(int requestCode) {
+            if (REQUEST_CODE_WRITE_SD == requestCode) {
+                requestWriteSdSuccess();
+            }
+        }
+    };
+
+    private void requestWriteSdSuccess() {
+        CsLog.logD("声请权限成功");
     }
 
     private void initData() {
@@ -94,12 +128,12 @@ public class LoginActivity extends AppCompatActivity {
         login();
     }
 
-    private void setNickName(String uid){
+    private void setNickName(String uid) {
         String nickName = nickNameEdit.getText().toString();
         if (TextUtils.isEmpty(nickName)) {
             CsAppUtils.nickName = uid;
             LoginSharedUtil.INSTANCE.setNickName("", CsAppUtils.isOnlinePlatform);
-        } else{
+        } else {
             CsAppUtils.nickName = nickName;
             LoginSharedUtil.INSTANCE.setNickName(nickName, CsAppUtils.isOnlinePlatform);
         }

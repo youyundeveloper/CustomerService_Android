@@ -1,15 +1,18 @@
 package com.customerservice.chat;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -302,10 +305,32 @@ public class CsChatActivity extends Activity implements CsChatView, View.OnClick
         } else if (view == photoGalleryBtn) {
             selectPicFromLocal();
         } else if (view == takePhotoBtn) {
-            selectPicFromCamera();
+            CsAppUtils.requestPermission(this, REQUEST_CODE_CAMERA, callback, Manifest.permission.CAMERA);
         } else if (view == backBtn) {
             onBackPressed();
         }
+    }
+
+    CsAppUtils.PermissionCallback callback = new CsAppUtils.PermissionCallback() {
+        @Override
+        public void onComplete(int requestCode) {
+            if(REQUEST_CODE_CAMERA == requestCode){
+                selectPicFromCamera();
+            }
+        }
+    };
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == REQUEST_CODE_CAMERA){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                selectPicFromCamera();
+            } else{
+                CsAppUtils.toastMessage("Permission Denied");
+            }
+            return;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
