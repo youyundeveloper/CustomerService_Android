@@ -1,12 +1,12 @@
 package com.customerservice.chat;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,11 +14,11 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.customerservice.utils.CsAppUtils;
-import com.customerservice.utils.CsLog;
 import com.customerservice.R;
 import com.customerservice.chat.model.CsFileEntity;
 import com.customerservice.receiver.CsBroadCastCenter;
+import com.customerservice.utils.CsAppUtils;
+import com.customerservice.utils.CsLog;
 import com.ioyouyun.wchat.WeimiInstance;
 import com.ioyouyun.wchat.message.WChatException;
 
@@ -27,7 +27,7 @@ import com.ioyouyun.wchat.message.WChatException;
  * 查看大图
  */
 
-public class CsBigImageActivity extends AppCompatActivity {
+public class CsBigImageActivity extends Activity {
 
     private final static String FILE_ENTITY = "file_entity";
     private final static String CHAT_POSITION = "chat_position";

@@ -1,6 +1,7 @@
 package com.customerservice.chat;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,7 +12,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -38,7 +38,7 @@ import java.util.List;
  * Created by Bill on 2016/12/8.
  */
 
-public class CsChatActivity extends AppCompatActivity implements CsChatView, View.OnClickListener {
+public class CsChatActivity extends Activity implements CsChatView, View.OnClickListener {
 
     public static final int REQUEST_CODE_CAMERA = 1001;
     public static final int REQUEST_CODE_LOCAL = 1002;
