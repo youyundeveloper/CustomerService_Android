@@ -119,6 +119,11 @@ public class CsChatActivity extends Activity implements CsChatView, View.OnClick
         manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
+    public static void startActivity(Activity activity){
+        Intent intent = new Intent(activity, CsChatActivity.class);
+        activity.startActivity(intent);
+    }
+
     private void initData() {
         titleText.setText(getResources().getString(R.string.cs_online_service));
 

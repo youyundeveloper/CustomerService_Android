@@ -31,7 +31,10 @@ import com.customerservice.chat.jsonmodel.CsNoticeMsgEntity;
 import com.customerservice.chat.jsonmodel.CsTextMsgEntity;
 import com.customerservice.chat.model.CsChatEntity;
 import com.customerservice.chat.model.CsFileEntity;
+import com.customerservice.kpwidget.CircleImageView;
 import com.customerservice.utils.CsAppUtils;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -96,8 +99,15 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     }
 
-    private void showHead(final ImageView imageView, Object resource){
-        Glide.with(context)
+    private void showHead(final ImageView imageView, String resource){
+        ImageLoader.getInstance().loadImage(resource, new SimpleImageLoadingListener(){
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                imageView.setImageBitmap(loadedImage);
+            }
+        });
+
+        /*Glide.with(context)
                 .load(resource)
                 .asBitmap()
                 .centerCrop()
@@ -111,7 +121,7 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                         circularBitmapDrawable.setCircular(true);
                         imageView.setImageDrawable(circularBitmapDrawable);
                     }
-                });
+                });*/
     }
 
     private boolean isFirstNotCard = false; //
@@ -177,7 +187,7 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             if(entity.headUrl != null && entity.headUrl.startsWith("http")) {
                 showHead(robotTextHolder.avatarImage, entity.headUrl);
             } else
-                showHead(robotTextHolder.avatarImage, R.mipmap.ic_launcher);
+                robotTextHolder.avatarImage.setImageResource(R.mipmap.ic_launcher);
             if (entity.isShowTime) {
                 robotTextHolder.dataText.setVisibility(View.VISIBLE);
                 robotTextHolder.dataText.setText(sdf.format(new Date(entity.time)));
@@ -234,7 +244,7 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             if(entity.headUrl != null && entity.headUrl.startsWith("http")) {
                 showHead(robotImageHolder.avatarImage, entity.headUrl);
             } else
-                showHead(robotImageHolder.avatarImage, R.mipmap.ic_launcher);
+                robotImageHolder.avatarImage.setImageResource(R.mipmap.ic_launcher);
             final CsFileEntity csFileEntity = entity.csFileEntity;
             Bitmap bitmap = BitmapFactory.decodeFile(csFileEntity.thumbnailPath);
             CsMaskView imgView = new CsMaskView(context, bitmap,
@@ -325,13 +335,13 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     class RobotImageHolder extends RecyclerView.ViewHolder {
 
         TextView dataText;
-        ImageView avatarImage;
+        CircleImageView avatarImage;
         ViewGroup imgParent;
 
         public RobotImageHolder(View itemView) {
             super(itemView);
             dataText = (TextView) itemView.findViewById(R.id.tv_send_time);
-            avatarImage = (ImageView) itemView.findViewById(R.id.iv_user_head);
+            avatarImage = (CircleImageView) itemView.findViewById(R.id.iv_user_head);
             imgParent = (ViewGroup) itemView.findViewById(R.id.img_parent);
         }
     }
@@ -342,7 +352,7 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     class PeopleImageHolder extends RecyclerView.ViewHolder {
 
         TextView dataText;
-        ImageView avatarImage;
+        CircleImageView avatarImage;
         ViewGroup imgParent;
         View imageLayout;
         TextView progressText;
@@ -350,7 +360,7 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         public PeopleImageHolder(View itemView) {
             super(itemView);
             dataText = (TextView) itemView.findViewById(R.id.tv_send_time);
-            avatarImage = (ImageView) itemView.findViewById(R.id.iv_user_head);
+            avatarImage = (CircleImageView) itemView.findViewById(R.id.iv_user_head);
             imgParent = (ViewGroup) itemView.findViewById(R.id.img_parent);
             imageLayout = itemView.findViewById(R.id.image_layout);
             progressText = (TextView) itemView.findViewById(R.id.tv_progress);
@@ -363,13 +373,13 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     class PeopleTextHolder extends RecyclerView.ViewHolder {
 
         TextView dataText;
-        ImageView avatarImage;
+        CircleImageView avatarImage;
         TextView contentText;
 
         public PeopleTextHolder(View itemView) {
             super(itemView);
             dataText = (TextView) itemView.findViewById(R.id.tv_send_time);
-            avatarImage = (ImageView) itemView.findViewById(R.id.iv_user_head);
+            avatarImage = (CircleImageView) itemView.findViewById(R.id.iv_user_head);
             contentText = (TextView) itemView.findViewById(R.id.tv_chat_content);
         }
     }
@@ -380,13 +390,13 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     class RobotTextHolder extends RecyclerView.ViewHolder {
 
         TextView dataText;
-        ImageView avatarImage;
+        CircleImageView avatarImage;
         TextView contentText;
 
         public RobotTextHolder(View itemView) {
             super(itemView);
             dataText = (TextView) itemView.findViewById(R.id.tv_send_time);
-            avatarImage = (ImageView) itemView.findViewById(R.id.iv_user_head);
+            avatarImage = (CircleImageView) itemView.findViewById(R.id.iv_user_head);
             contentText = (TextView) itemView.findViewById(R.id.tv_chat_content);
         }
     }
