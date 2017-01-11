@@ -5,8 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.NinePatchDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -19,8 +17,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import com.customerservice.R;
 import com.customerservice.chat.imagemask.CsMaskView;
 import com.customerservice.chat.jsonmodel.CsActionMsgEntity;
@@ -106,22 +102,6 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 imageView.setImageBitmap(loadedImage);
             }
         });
-
-        /*Glide.with(context)
-                .load(resource)
-                .asBitmap()
-                .centerCrop()
-                .placeholder(R.mipmap.ic_launcher)
-                .error(R.mipmap.ic_launcher)
-                .into(new BitmapImageViewTarget(imageView){
-                    @Override
-                    protected void setResource(Bitmap resource) {
-                        RoundedBitmapDrawable circularBitmapDrawable =
-                                RoundedBitmapDrawableFactory.create(context.getResources(), resource);
-                        circularBitmapDrawable.setCircular(true);
-                        imageView.setImageDrawable(circularBitmapDrawable);
-                    }
-                });*/
     }
 
     private boolean isFirstNotCard = false; //
