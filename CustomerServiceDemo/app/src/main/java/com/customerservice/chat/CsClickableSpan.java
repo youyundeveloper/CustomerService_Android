@@ -18,6 +18,8 @@ import com.ioyouyun.wchat.WeimiInstance;
 import com.ioyouyun.wchat.message.ConvType;
 import com.ioyouyun.wchat.message.WChatException;
 
+import java.io.UnsupportedEncodingException;
+
 /**
  * Created by Bill on 2016/12/9.
  */
@@ -62,8 +64,11 @@ public class CsClickableSpan extends ClickableSpan {
         CsLog.logD("action:" + text);
         boolean result = false;
         try {
-            result = WeimiInstance.getInstance().sendMixedText(msgId, CsAppUtils.CUSTOM_SERVICE_ID, text, ConvType.single, null, 60);
+            byte[] padding = CsAppUtils.encapsulateExt().getBytes("utf-8");
+            result = WeimiInstance.getInstance().sendMixedText(msgId, CsAppUtils.CUSTOM_SERVICE_ID, text, ConvType.single, padding, 60);
         } catch (WChatException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         if (!result)

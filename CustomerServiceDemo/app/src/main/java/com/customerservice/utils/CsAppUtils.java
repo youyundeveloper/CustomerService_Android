@@ -161,7 +161,7 @@ public class CsAppUtils {
     private static final String FROM = "from";
     public static final String NICK_NAME = "name";
     public static final String HEAD_URL = "pic";
-    public static final String USERID = "uid";
+    public static final String USERID = "id";
     public static final String SYSTEM_MSG_CODE = "50001";
 
     /**

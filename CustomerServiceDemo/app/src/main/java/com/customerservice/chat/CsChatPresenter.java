@@ -111,8 +111,11 @@ public class CsChatPresenter {
 
         int sliceCount = 0;
         try {
-            sliceCount = WeimiInstance.getInstance().sendFile(msgId, CsAppUtils.CUSTOM_SERVICE_ID, csFileEntity.fileLocal, fileName, MetaMessageType.image, null, ConvType.single, null, thumbnail, 600);
+            byte[] padding = CsAppUtils.encapsulateExt().getBytes("utf-8");
+            sliceCount = WeimiInstance.getInstance().sendFile(msgId, CsAppUtils.CUSTOM_SERVICE_ID, csFileEntity.fileLocal, fileName, MetaMessageType.image, null, ConvType.single, padding, thumbnail, 600);
         } catch (WChatException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         if (sliceCount > 0) {
@@ -137,8 +140,11 @@ public class CsChatPresenter {
 //        String sendMsg = CsAppUtils.encapsulateTest();
         boolean result = false;
         try {
-            result = WeimiInstance.getInstance().sendText(msgId, CsAppUtils.CUSTOM_SERVICE_ID, sendMsg, ConvType.single, null, 60);
+            byte[] padding = CsAppUtils.encapsulateExt().getBytes("utf-8");
+            result = WeimiInstance.getInstance().sendText(msgId, CsAppUtils.CUSTOM_SERVICE_ID, sendMsg, ConvType.single, padding, 60);
         } catch (WChatException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         if(result){
@@ -161,10 +167,7 @@ public class CsChatPresenter {
     public void sendMixedText(int type) {
         String msgId = WeimiInstance.getInstance().genLocalMsgId(CsAppUtils.CUSTOM_SERVICE_ID);
         try {
-            byte[] padding = null;
-            if(1 == type){
-                padding = CsAppUtils.encapsulateExt().getBytes("utf-8");
-            }
+            byte[] padding = CsAppUtils.encapsulateExt().getBytes("utf-8");
             CsLog.logD("ext:" + CsAppUtils.encapsulateExt());
             WeimiInstance.getInstance().sendMixedText(msgId, CsAppUtils.CUSTOM_SERVICE_ID, CsAppUtils.encapsulateEnterOrLeaveMsg(type), ConvType.single, padding, 60);
         } catch (WChatException e) {
