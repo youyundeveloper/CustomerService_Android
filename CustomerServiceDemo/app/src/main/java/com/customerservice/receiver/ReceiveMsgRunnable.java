@@ -14,6 +14,7 @@ import com.ioyouyun.wchat.message.FileMessage;
 import com.ioyouyun.wchat.message.NoticeType;
 import com.ioyouyun.wchat.message.NotifyCenter;
 import com.ioyouyun.wchat.message.TextMessage;
+import com.ioyouyun.wchat.message.WChatException;
 import com.ioyouyun.wchat.message.WeimiNotice;
 import com.ioyouyun.wchat.protocol.MetaMessageType;
 
@@ -66,6 +67,10 @@ public class ReceiveMsgRunnable implements Runnable {
                 sendfileMethod(weimiNotice);
             } else if (NoticeType.recvUnreadNum == type){
                 recvUnreadNumMethod(weimiNotice);
+            } else if (NoticeType.exception == type){
+                WChatException wChatException = (WChatException) weimiNotice.getObject();
+                int statusCode = wChatException.getStatusCode();
+                CsLog.logD("statusCode:" + statusCode);
             }
 
         }

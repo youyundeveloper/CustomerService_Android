@@ -92,7 +92,8 @@ public class CsBigImageActivity extends Activity {
     private void downLoadImg(CsFileEntity csFileEntity) {
         downloadPath = CsAppUtils.getChatImagePath(csFileEntity.fileId) + ".png";
         try {
-            WeimiInstance.getInstance().downloadFile(csFileEntity.fileId, downloadPath, csFileEntity.fileLength, null, csFileEntity.pieceSize, 60);
+            WeimiInstance.getInstance().downloadAllFile(csFileEntity.fileId, downloadPath, 60);
+//            WeimiInstance.getInstance().downloadFile(csFileEntity.fileId, downloadPath, csFileEntity.fileLength, null, csFileEntity.pieceSize, 60);
         } catch (WChatException e) {
             e.printStackTrace();
         }
