@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.customerservice.R;
@@ -64,7 +65,7 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         this.notifyDataSetChanged();
     }
 
-    public CsChatEntity getItem(int position){
+    public CsChatEntity getItem(int position) {
         return chatList.get(position);
     }
 
@@ -74,19 +75,19 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             View view = inflater.inflate(R.layout.cs_layout_chat_text_people, parent, false);
             PeopleTextHolder viewHolder = new PeopleTextHolder(view);
             return viewHolder;
-        } else if(viewType == CsChatEntity.CHAT_TYPE_ROBOT_TEXT){
+        } else if (viewType == CsChatEntity.CHAT_TYPE_ROBOT_TEXT) {
             View mView = LayoutInflater.from(context).inflate(R.layout.cs_layout_chat_text_robot, parent, false);
             RobotTextHolder viewHolder = new RobotTextHolder(mView);
             return viewHolder;
-        }else if(viewType == CsChatEntity.CHAT_TYPE_PEOPLE_SEND_IMAGE){
+        } else if (viewType == CsChatEntity.CHAT_TYPE_PEOPLE_SEND_IMAGE) {
             View mView = LayoutInflater.from(context).inflate(R.layout.cs_layout_chat_image_people, parent, false);
             PeopleImageHolder viewHolder = new PeopleImageHolder(mView);
             return viewHolder;
-        }else if(viewType == CsChatEntity.CHAT_TYPE_ROBOT_IMAGE){
+        } else if (viewType == CsChatEntity.CHAT_TYPE_ROBOT_IMAGE) {
             View mView = LayoutInflater.from(context).inflate(R.layout.cs_layout_chat_image_robot, parent, false);
             RobotImageHolder viewHolder = new RobotImageHolder(mView);
             return viewHolder;
-        }else if(viewType == CsChatEntity.CHAT_TYPE_NOTICE){
+        } else if (viewType == CsChatEntity.CHAT_TYPE_NOTICE) {
             View mView = LayoutInflater.from(context).inflate(R.layout.cs_layout_chat_notice, parent, false);
             NoticeHolder noticeHolder = new NoticeHolder(mView);
             return noticeHolder;
@@ -95,8 +96,8 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     }
 
-    private void showHead(final ImageView imageView, String resource){
-        ImageLoader.getInstance().loadImage(resource, new SimpleImageLoadingListener(){
+    private void showHead(final ImageView imageView, String resource) {
+        ImageLoader.getInstance().loadImage(resource, new SimpleImageLoadingListener() {
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 imageView.setImageBitmap(loadedImage);
@@ -106,7 +107,8 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     private boolean isFirstNotCard = false; //
     private SpannableStringBuilder builder = new SpannableStringBuilder();
-    private void spannable(CsJsonParentEntity entity){
+
+    private void spannable(CsJsonParentEntity entity) {
         if (entity instanceof CsTextMsgEntity) {
             CsTextMsgEntity csTextMsgEntity = (CsTextMsgEntity) entity;
             int perLength = builder.length();
@@ -140,9 +142,9 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         } else if (entity instanceof CsCardMsgEntity) {
             CsCardMsgEntity cardMsgEntity = (CsCardMsgEntity) entity;
             List<CsJsonParentEntity> list = cardMsgEntity.content;
-            if(isFirstNotCard)
+            if (isFirstNotCard)
                 builder.append("\n");
-            for (int i = 0; i < list.size(); i++){
+            for (int i = 0; i < list.size(); i++) {
                 spannable(list.get(i));
             }
 
@@ -164,7 +166,7 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             peopleTextHolder.contentText.setText(csTextMsgEntity.content);
         } else if (holder instanceof RobotTextHolder) {
             final RobotTextHolder robotTextHolder = (RobotTextHolder) holder;
-            if(entity.headUrl != null && entity.headUrl.startsWith("http")) {
+            if (entity.headUrl != null && entity.headUrl.startsWith("http")) {
                 showHead(robotTextHolder.avatarImage, entity.headUrl);
             } else
                 robotTextHolder.avatarImage.setImageResource(R.mipmap.ic_launcher);
@@ -178,7 +180,7 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             isFirstNotCard = false;
             builder.clear();
             spannable(entity.csJsonParentEntity);
-            if(builder.length() > 0)
+            if (builder.length() > 0)
                 builder.delete(builder.toString().lastIndexOf("\n"), builder.length());
             robotTextHolder.contentText.setText(builder);
             robotTextHolder.contentText.setMovementMethod(LinkMovementMethod.getInstance());
@@ -199,11 +201,11 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             layoutParams.width = imgView.getMaskViewSize() != null ?
                     imgView.getMaskViewSize().viewWidth : layoutParams.width;
 
-            if(entity.fileProgress == -1){
-                peopleImageHolder.progressText.setVisibility(View.GONE);
-            }else{
-                peopleImageHolder.progressText.setVisibility(View.VISIBLE);
-                peopleImageHolder.progressText.setText(String.valueOf(entity.fileProgress));
+            if (entity.fileProgress == -1) {
+                peopleImageHolder.imgProgress.setVisibility(View.GONE);
+            } else {
+                peopleImageHolder.imgProgress.setVisibility(View.VISIBLE);
+                peopleImageHolder.imgProgress.setProgress(entity.fileProgress);
             }
 
             if (entity.isShowTime) {
@@ -219,9 +221,9 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     CsBigImageActivity.startActivity(context, csFileEntity, position);
                 }
             });
-        }else if(holder instanceof RobotImageHolder){
+        } else if (holder instanceof RobotImageHolder) {
             final RobotImageHolder robotImageHolder = (RobotImageHolder) holder;
-            if(entity.headUrl != null && entity.headUrl.startsWith("http")) {
+            if (entity.headUrl != null && entity.headUrl.startsWith("http")) {
                 showHead(robotImageHolder.avatarImage, entity.headUrl);
             } else
                 robotImageHolder.avatarImage.setImageResource(R.mipmap.ic_launcher);
@@ -252,7 +254,7 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     CsBigImageActivity.startActivity(context, csFileEntity, position);
                 }
             });
-        }else if (holder instanceof NoticeHolder) {
+        } else if (holder instanceof NoticeHolder) {
             final NoticeHolder noticeHolder = (NoticeHolder) holder;
             CsNoticeMsgEntity noticeMsgEntity = (CsNoticeMsgEntity) entity.csJsonParentEntity;
             noticeHolder.noticeMsgText.setText(noticeMsgEntity.content);
@@ -286,8 +288,8 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     /**
      * Item点击事件
-     * @param onItemClickListener
      *
+     * @param onItemClickListener
      * @deprecated 这里貌似用不上了
      */
     public void setOnItemClickLitener(OnItemClickListener onItemClickListener) {
@@ -335,7 +337,7 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         CircleImageView avatarImage;
         ViewGroup imgParent;
         View imageLayout;
-        TextView progressText;
+        ProgressBar imgProgress;
 
         public PeopleImageHolder(View itemView) {
             super(itemView);
@@ -343,7 +345,7 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             avatarImage = (CircleImageView) itemView.findViewById(R.id.iv_user_head);
             imgParent = (ViewGroup) itemView.findViewById(R.id.img_parent);
             imageLayout = itemView.findViewById(R.id.image_layout);
-            progressText = (TextView) itemView.findViewById(R.id.tv_progress);
+            imgProgress = (ProgressBar) itemView.findViewById(R.id.img_progress);
         }
     }
 
