@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -210,10 +211,10 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     imgView.getMaskViewSize().viewWidth : layoutParams.width;
 
             if(entity.fileProgress == -1){
-                peopleImageHolder.progressText.setVisibility(View.GONE);
+                peopleImageHolder.imgProgress.setVisibility(View.GONE);
             }else{
-                peopleImageHolder.progressText.setVisibility(View.VISIBLE);
-                peopleImageHolder.progressText.setText(String.valueOf(entity.fileProgress));
+                peopleImageHolder.imgProgress.setVisibility(View.VISIBLE);
+                peopleImageHolder.imgProgress.setProgress(entity.fileProgress);
             }
 
             if (entity.isShowTime) {
@@ -345,7 +346,7 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         ImageView avatarImage;
         ViewGroup imgParent;
         View imageLayout;
-        TextView progressText;
+        ProgressBar imgProgress;
 
         public PeopleImageHolder(View itemView) {
             super(itemView);
@@ -353,7 +354,7 @@ public class CsChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             avatarImage = (ImageView) itemView.findViewById(R.id.iv_user_head);
             imgParent = (ViewGroup) itemView.findViewById(R.id.img_parent);
             imageLayout = itemView.findViewById(R.id.image_layout);
-            progressText = (TextView) itemView.findViewById(R.id.tv_progress);
+            imgProgress = (ProgressBar) itemView.findViewById(R.id.img_progress);
         }
     }
 
