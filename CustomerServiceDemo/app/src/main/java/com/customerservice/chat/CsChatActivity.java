@@ -64,6 +64,9 @@ public class CsChatActivity extends Activity implements CsChatView, View.OnClick
     private CsChatPresenter presenter;
     private boolean isShowMore = false;
 
+    private static final String FROM_KEY = "from_key";
+    private String fromData;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +77,7 @@ public class CsChatActivity extends Activity implements CsChatView, View.OnClick
         initData();
         addListener();
 
+        getIntentExtra();
         connect();
     }
 
@@ -100,14 +104,19 @@ public class CsChatActivity extends Activity implements CsChatView, View.OnClick
     private void connect() {
         // 取消设置不sycn客服消息
         WeimiInstance.getInstance().cancleShieldSyncUserId(CsAppUtils.CUSTOM_SERVICE_ID);
-        presenter.sendMixedText(1);
+        presenter.sendMixedText(1, fromData);
+    }
+
+    private void getIntentExtra(){
+        Intent intent = getIntent();
+        fromData = intent.getStringExtra(FROM_KEY);
     }
 
     /**
      * 离开房间调用告诉客服已断开
      */
     private void disconnect() {
-        presenter.sendMixedText(2);
+        presenter.sendMixedText(2, null);
         // 设置不sycn客服消息
         WeimiInstance.getInstance().shieldSyncUserId(CsAppUtils.CUSTOM_SERVICE_ID);
     }
@@ -119,8 +128,9 @@ public class CsChatActivity extends Activity implements CsChatView, View.OnClick
         manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    public static void startActivity(Activity activity){
+    public static void startActivity(Activity activity, String fromData){
         Intent intent = new Intent(activity, CsChatActivity.class);
+        intent.putExtra(FROM_KEY, fromData);
         activity.startActivity(intent);
     }
 
