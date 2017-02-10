@@ -87,12 +87,6 @@ public class CsChatActivity extends Activity implements CsChatView, View.OnClick
         back();
     }
 
-    @Override
-    public void onBackPressed() {
-        back();
-        super.onBackPressed();
-    }
-
     private void back() {
         disconnect();
         presenter.onDestroy();
@@ -322,7 +316,7 @@ public class CsChatActivity extends Activity implements CsChatView, View.OnClick
         } else if (view == takePhotoBtn) {
             CsAppUtils.requestPermission(this, REQUEST_CODE_CAMERA, callback, Manifest.permission.CAMERA);
         } else if (view == backBtn) {
-            onBackPressed();
+            finish();
         }
     }
 

@@ -72,6 +72,8 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
 
             String fromData = "queryId=4030507255933456&type=1";
             CsChatActivity.startActivity(this, fromData);
+
+            CsAppUtils.unReadNum = 0;
         }
     }
 
