@@ -164,12 +164,12 @@ public class CsChatPresenter {
      * @param type 1:enter 2:leave
      * 发送富文本消息
      */
-    public void sendMixedText(int type) {
+    public void sendMixedText(int type, String data) {
         String msgId = WeimiInstance.getInstance().genLocalMsgId(CsAppUtils.CUSTOM_SERVICE_ID);
         try {
             byte[] padding = CsAppUtils.encapsulateExt().getBytes("utf-8");
             CsLog.logD("ext:" + CsAppUtils.encapsulateExt());
-            WeimiInstance.getInstance().sendMixedText(msgId, CsAppUtils.CUSTOM_SERVICE_ID, CsAppUtils.encapsulateEnterOrLeaveMsg(type), ConvType.single, padding, 60);
+            WeimiInstance.getInstance().sendMixedText(msgId, CsAppUtils.CUSTOM_SERVICE_ID, CsAppUtils.encapsulateEnterOrLeaveMsg(type, data), ConvType.single, padding, 60);
         } catch (WChatException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {

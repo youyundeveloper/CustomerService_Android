@@ -70,8 +70,10 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
         if (v == itemLayout) {
             unreadNumText.setVisibility(View.GONE);
 
-            Intent intent = new Intent(this, CsChatActivity.class);
-            startActivity(intent);
+            String fromData = "queryId=4030507255933456&type=1";
+            CsChatActivity.startActivity(this, fromData);
+
+            CsAppUtils.unReadNum = 0;
         }
     }
 

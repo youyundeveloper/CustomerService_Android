@@ -39,12 +39,15 @@
 
             <Button
                 android:id="@+id/btn_send"
-                android:layout_width="60dp"
-                android:layout_height="48dp"
+                android:layout_width="65dp"
+                android:layout_height="35dp"
+                android:layout_gravity="center_vertical"
                 android:layout_marginLeft="7.5dp"
                 android:layout_marginRight="12dp"
+                android:background="@drawable/cs_selector_send_btn"
                 android:text="@string/cs_send"
-                android:textSize="16sp"
+                android:textColor="@color/cs_color_white"
+                android:textSize="15sp"
                 android:visibility="gone" />
         </LinearLayout>
 

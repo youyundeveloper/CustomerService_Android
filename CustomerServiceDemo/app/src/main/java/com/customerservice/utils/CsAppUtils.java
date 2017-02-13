@@ -10,6 +10,7 @@ import android.media.ExifInterface;
 import android.os.Environment;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -162,6 +163,7 @@ public class CsAppUtils {
     public static final String NICK_NAME = "name";
     public static final String HEAD_URL = "pic";
     public static final String USERID = "id";
+    public static final String KP_SOURCE = "kp_source";
     public static final String SYSTEM_MSG_CODE = "50001";
 
     /**
@@ -204,16 +206,20 @@ public class CsAppUtils {
      * @param sort 1:enter 2:leave
      * @return
      */
-    public static String encapsulateEnterOrLeaveMsg(int sort) {
+    public static String encapsulateEnterOrLeaveMsg(int sort, String data) {
         JSONObject object = new JSONObject();
         try {
             object.put(TYPE, EVENT);
             JSONObject paramObj = new JSONObject();
-            if (1 == sort)
+            if (1 == sort) {
                 paramObj.put(SORT, ENTER_KEY);
+                JSONObject fromJson = new JSONObject();
+                if(!TextUtils.isEmpty(data))
+                    fromJson.put(KP_SOURCE, data);
+                paramObj.put(FROM, fromJson);
+            }
             else if (2 == sort)
                 paramObj.put(SORT, LEAVE_KEY);
-            paramObj.put(FROM, "room");
             object.put(PARAMS, paramObj);
         } catch (JSONException e) {
             e.printStackTrace();
