@@ -2,8 +2,8 @@ package com.customerservice;
 
 import android.app.Application;
 
-import com.customerservice.receiver.CsBroadCastCenter;
-import com.customerservice.utils.CsAppUtils;
+import com.ioyouyun.customerservice.receiver.CsBroadCastCenter;
+import com.ioyouyun.customerservice.utils.CsAppUtils;
 
 /**
  * Created by Bill on 2016/12/8.

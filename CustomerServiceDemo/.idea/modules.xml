@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/CustomerServiceDemo.iml" filepath="$PROJECT_DIR$/CustomerServiceDemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/youyun-customerservice-android/youyun-customerservice-android.iml" filepath="$PROJECT_DIR$/youyun-customerservice-android/youyun-customerservice-android.iml" />
     </modules>
   </component>
 </project>

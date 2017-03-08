@@ -11,10 +11,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.customerservice.R;
-import com.customerservice.chat.CsChatActivity;
-import com.customerservice.receiver.CsBroadCastCenter;
-import com.customerservice.utils.CsAppUtils;
-import com.customerservice.utils.CsLog;
+import com.ioyouyun.customerservice.chat.CsChatActivity;
+import com.ioyouyun.customerservice.receiver.CsBroadCastCenter;
+import com.ioyouyun.customerservice.utils.CsAppUtils;
+import com.ioyouyun.customerservice.utils.CsLog;
 import com.ioyouyun.wchat.WeimiInstance;
 
 public class RecentContactActivity extends AppCompatActivity implements View.OnClickListener {

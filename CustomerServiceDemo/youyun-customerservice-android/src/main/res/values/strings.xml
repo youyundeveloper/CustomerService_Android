@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">youyun-customerservice-android</string>
+    <string name="cs_online_service">在线客服</string>
+    <string name="cs_button_photo_gallery">相册</string>
+    <string name="cs_button_take_photo">拍照</string>
+    <string name="cs_send">发送</string>
+</resources>

@@ -21,7 +21,6 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/ActivityTheme">
-        <activity android:name=".MainActivity" />
         <activity
             android:name=".login.LoginActivity"
             android:screenOrientation="portrait">
@@ -32,11 +31,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".chat.CsChatActivity"
+            android:name="com.ioyouyun.customerservice.chat.CsChatActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
-            android:name=".chat.CsBigImageActivity"
+            android:name="com.ioyouyun.customerservice.chat.CsBigImageActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".recentlist.RecentContactActivity"

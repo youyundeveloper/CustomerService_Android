@@ -15,10 +15,10 @@ import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 
 import com.customerservice.R;
-import com.customerservice.receiver.ReceiveMsgRunnable;
 import com.customerservice.recentlist.RecentContactActivity;
-import com.customerservice.utils.CsAppUtils;
-import com.customerservice.utils.CsLog;
+import com.ioyouyun.customerservice.receiver.CsReceiveMsgRunnable;
+import com.ioyouyun.customerservice.utils.CsAppUtils;
+import com.ioyouyun.customerservice.utils.CsLog;
 import com.ioyouyun.wchat.ServerType;
 import com.ioyouyun.wchat.WeimiInstance;
 import com.ioyouyun.wchat.data.AuthResultData;
@@ -83,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
         CsAppUtils.isOnlinePlatform = false;
         CsAppUtils.CUSTOM_SERVICE_ID = CsAppUtils.CUSTOM_SERVICE_FIXED_ID_TEST;
 
-        String nickName = LoginSharedUtil.INSTANCE.getNickName(CsAppUtils.isOnlinePlatform);
+        String nickName = LoginSharedUtil.getInstance(LoginActivity.this).getNickName(CsAppUtils.isOnlinePlatform);
         if (!TextUtils.isEmpty(nickName)) {
             nickNameEdit.setText(nickName);
         }
@@ -104,7 +104,7 @@ public class LoginActivity extends AppCompatActivity {
                     CsAppUtils.isOnlinePlatform = false;
                     CsAppUtils.CUSTOM_SERVICE_ID = CsAppUtils.CUSTOM_SERVICE_FIXED_ID_TEST;
                 }
-                nickNameEdit.setText(LoginSharedUtil.INSTANCE.getNickName(CsAppUtils.isOnlinePlatform));
+                nickNameEdit.setText(LoginSharedUtil.getInstance(LoginActivity.this).getNickName(CsAppUtils.isOnlinePlatform));
             }
         });
     }
@@ -132,10 +132,10 @@ public class LoginActivity extends AppCompatActivity {
         String nickName = nickNameEdit.getText().toString();
         if (TextUtils.isEmpty(nickName)) {
             CsAppUtils.nickName = uid;
-            LoginSharedUtil.INSTANCE.setNickName("", CsAppUtils.isOnlinePlatform);
+            LoginSharedUtil.getInstance(LoginActivity.this).setNickName("", CsAppUtils.isOnlinePlatform);
         } else {
             CsAppUtils.nickName = nickName;
-            LoginSharedUtil.INSTANCE.setNickName(nickName, CsAppUtils.isOnlinePlatform);
+            LoginSharedUtil.getInstance(LoginActivity.this).setNickName(nickName, CsAppUtils.isOnlinePlatform);
         }
     }
 
@@ -143,7 +143,7 @@ public class LoginActivity extends AppCompatActivity {
      * 登录成功后开始接收消息
      */
     private void startReveive() {
-        ReceiveMsgRunnable runnable = new ReceiveMsgRunnable(CsAppUtils.mAppContext);
+        CsReceiveMsgRunnable runnable = new CsReceiveMsgRunnable(CsAppUtils.mAppContext);
         Thread msgThread = new Thread(runnable);
         msgThread.start();
     }

@@ -2,8 +2,7 @@ package com.customerservice.login;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
-import com.customerservice.utils.CsAppUtils;
+import android.support.annotation.NonNull;
 
 /**
  * Created by Bill on 2016/12/30.
@@ -11,23 +10,34 @@ import com.customerservice.utils.CsAppUtils;
  * 单例 存储用户昵称
  */
 
-public enum LoginSharedUtil {
+public class LoginSharedUtil {
 
-    INSTANCE;
-
-    private SharedPreferences sharedPreferences;
+    private static SharedPreferences sharedPreferences;
     public static final String NAME = "kefu_login_preference";
     public static final String KEY_NICKNAME = "key_nickname";
     public static final String KEY_NICKNAME_TEST = "key_nickname_test";
 
-    private SharedPreferences initShare() {
-        if (sharedPreferences == null)
-            sharedPreferences = CsAppUtils.mAppContext.getSharedPreferences(NAME, Context.MODE_PRIVATE);
-        return sharedPreferences;
+    private static volatile LoginSharedUtil instance;
+
+    private LoginSharedUtil(Context context) {
+        sharedPreferences = context.getSharedPreferences(NAME, Context.MODE_PRIVATE);
+    }
+
+    public static LoginSharedUtil getInstance(@NonNull Context context) {
+        if (instance == null) {
+            synchronized (LoginSharedUtil.class) {
+                if (instance == null) {
+                    instance = new LoginSharedUtil(context);
+                }
+            }
+        }
+        return instance;
     }
 
     public void setNickName(String nickName, boolean isOnline) {
-        SharedPreferences.Editor editor = initShare().edit();
+        if (sharedPreferences == null)
+            return;
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         if (isOnline)
             editor.putString(KEY_NICKNAME, nickName);
         else
@@ -36,9 +46,11 @@ public enum LoginSharedUtil {
     }
 
     public String getNickName(boolean isOnline) {
+        if (sharedPreferences == null)
+            return "";
         if (isOnline)
-            return initShare().getString(KEY_NICKNAME, "");
+            return sharedPreferences.getString(KEY_NICKNAME, "");
         else
-            return initShare().getString(KEY_NICKNAME_TEST, "");
+            return sharedPreferences.getString(KEY_NICKNAME_TEST, "");
     }
 }
