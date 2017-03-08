@@ -80,6 +80,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initData() {
+        // TODO config 平台、客服号ID、用户ID昵称头像
         CsAppUtils.isOnlinePlatform = false;
         CsAppUtils.CUSTOM_SERVICE_ID = CsAppUtils.CUSTOM_SERVICE_FIXED_ID_TEST;
 
@@ -142,12 +143,14 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * 登录成功后开始接收消息
      */
+    // TODO 登录成功之后一些操作，开启接受线程、注册广播
     private void startReveive() {
         CsReceiveMsgRunnable runnable = new CsReceiveMsgRunnable(CsAppUtils.mAppContext);
         Thread msgThread = new Thread(runnable);
         msgThread.start();
     }
 
+    // TODO 登录流程 封装
     private void login() {
         progressBar.setVisibility(View.VISIBLE);
         new Thread(new Runnable() {
@@ -218,15 +221,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         }).start();
-    }
-
-    private void showUid(final String uid) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                CsAppUtils.toastMessage(uid);
-            }
-        });
     }
 
     private void closeProgress() {

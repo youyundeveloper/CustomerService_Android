@@ -70,9 +70,10 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
         if (v == itemLayout) {
             unreadNumText.setVisibility(View.GONE);
 
+            // TODO 进入客服界面
             String fromData = "queryId=4030507255933456&type=1";
             CsChatActivity.startActivity(this, fromData);
-
+            // TODO 未读数改为回调通知，不要用变量
             CsAppUtils.unReadNum = 0;
         }
     }
@@ -130,6 +131,7 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
         }
     }
 
+    // TODO 未读数改变时用回调方法通知，不发广播
     /**
      * 注册本地广播
      */

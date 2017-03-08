@@ -20,6 +20,7 @@ public class MyApplication extends Application {
     /**
      * 初始化客服
      */
+    // TODO 客服初始化 跟 wchatsdk 初始化封到一块
     private void initCS(){
         CsAppUtils.init(getApplicationContext());
         CsBroadCastCenter.getInstance().init(getApplicationContext());
