@@ -1,9 +1,8 @@
 package com.customerservice.recentlist;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -11,11 +10,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.customerservice.R;
-import com.ioyouyun.customerservice.chat.CsChatActivity;
-import com.ioyouyun.customerservice.receiver.CsBroadCastCenter;
+import com.customerservice.login.CsSharedUtil;
+import com.ioyouyun.customerservice.CsManager;
 import com.ioyouyun.customerservice.utils.CsAppUtils;
 import com.ioyouyun.customerservice.utils.CsLog;
-import com.ioyouyun.wchat.WeimiInstance;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class RecentContactActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -23,8 +24,7 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
     private TextView unreadNumText;
     private View itemLayout;
     private ProgressBar progressBar;
-
-    private MyInnerReceiver receiver;
+    private Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,60 +32,102 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
         setContentView(R.layout.activity_recent_contact);
         initView();
         addListener();
-        registerReceiver();
         initData();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver();
     }
 
     private void logout() {
         CsLog.logD("logout");
 
-        new Thread(new Runnable() {
+        CsManager.getInstance().logout(new CsManager.LogoutCallback() {
             @Override
-            public void run() {
-                final boolean result = WeimiInstance.getInstance().logout();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressBar.setVisibility(View.GONE);
-                        if (result) {
+            public void success() {
+                if (handler != null) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (progressBar != null) {
+                                progressBar.setVisibility(View.GONE);
+                            }
                             finish();
-                        } else {
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void failure() {
+                if (handler != null) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (progressBar != null) {
+                                progressBar.setVisibility(View.GONE);
+                            }
                             CsAppUtils.toastMessage("退出登录失败");
                         }
-                    }
-                });
+                    });
+                }
             }
-        }).start();
+        });
 
     }
 
     @Override
     public void onClick(View v) {
         if (v == itemLayout) {
-            unreadNumText.setVisibility(View.GONE);
+            JSONObject jsonObject = new JSONObject();
+            String fromData = "";
 
-            // TODO 进入客服界面
-            String fromData = "queryId=4030507255933456&type=1";
-            CsChatActivity.startActivity(this, fromData);
-            // TODO 未读数改为回调通知，不要用变量
-            CsAppUtils.unReadNum = 0;
+//            // 进入客服界面 库拍格式
+//            try {
+//                jsonObject.put("kp_source", "queryId=4030507255933456&type=1");
+//                fromData = jsonObject.toString();
+//            } catch (JSONException e) {
+//            }
+
+            // 进入客服界面 乐居格式
+            try {
+                jsonObject.put("building", "A小区");
+                jsonObject.put("city_id", "010");
+                jsonObject.put("city_name", "北京");
+                jsonObject.put("level", 2);
+                jsonObject.put("platform", 1);
+                fromData = jsonObject.toString();
+            } catch (JSONException e) {
+            }
+            CsManager.getInstance().gotoCsChatActivity(this, fromData);
+
+            CsSharedUtil.getInstance(RecentContactActivity.this).setUnreadNum(0);
+            showUnRead(0);
         }
     }
 
     private void initData() {
         kfIdText.setText(CsAppUtils.CUSTOM_SERVICE_ID);
 
-        showUnRead(CsAppUtils.unReadNum);
+        showUnRead(CsSharedUtil.getInstance(this).getUnreadNum());
     }
 
     private void addListener() {
         itemLayout.setOnClickListener(this);
+        CsManager.getInstance().addUnreadNumListener(new CsManager.UnreadNumListener() {
+            @Override
+            public void onUnreadNum(final int unreadNum) {
+                if (handler != null) {
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            showUnRead(unreadNum);
+                        }
+                    });
+                }
+            }
+        });
     }
 
     private void initView() {
@@ -122,42 +164,13 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
     }
 
     private void showUnRead(int num) {
+        if (unreadNumText == null)
+            return;
+        unreadNumText.setText(String.valueOf(num));
         if (num > 0) {
             unreadNumText.setVisibility(View.VISIBLE);
-            unreadNumText.setText(String.valueOf(num));
         } else {
-            unreadNumText.setText(String.valueOf(num));
             unreadNumText.setVisibility(View.GONE);
-        }
-    }
-
-    // TODO 未读数改变时用回调方法通知，不发广播
-    /**
-     * 注册本地广播
-     */
-    private void registerReceiver() {
-        receiver = new MyInnerReceiver();
-        CsBroadCastCenter.getInstance().registerReceiver(receiver, CsAppUtils.MSG_TYPE_RECV_UNREAD_NUM);
-    }
-
-    /**
-     * 注销广播
-     */
-    private void unregisterReceiver() {
-        if (receiver != null)
-            CsBroadCastCenter.getInstance().unregisterReceiver(receiver);
-    }
-
-    class MyInnerReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (CsAppUtils.MSG_TYPE_RECV_UNREAD_NUM.equals(action)) {
-                CsAppUtils.unReadNum = 0;
-                int num = intent.getIntExtra(CsAppUtils.TYPE_MSG, 0);
-                showUnRead(num);
-            }
         }
     }
 

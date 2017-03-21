@@ -84,7 +84,6 @@ public class CsReceiveMsgRunnable implements Runnable {
                 CsLog.logD("Key = " + entry.getKey() + ", Value = " + entry.getValue().num);
                 if(CsAppUtils.CUSTOM_SERVICE_ID.equals(entry.getKey())){
                     int num = entry.getValue().num;
-                    CsAppUtils.unReadNum = num;
                     Intent intent = new Intent();
                     intent.setAction(CsAppUtils.MSG_TYPE_RECV_UNREAD_NUM);
                     intent.putExtra(CsAppUtils.TYPE_MSG, num);

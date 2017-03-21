@@ -16,20 +16,10 @@ import android.widget.RadioGroup;
 
 import com.customerservice.R;
 import com.customerservice.recentlist.RecentContactActivity;
-import com.ioyouyun.customerservice.receiver.CsReceiveMsgRunnable;
+import com.ioyouyun.customerservice.CsManager;
 import com.ioyouyun.customerservice.utils.CsAppUtils;
 import com.ioyouyun.customerservice.utils.CsLog;
-import com.ioyouyun.wchat.ServerType;
-import com.ioyouyun.wchat.WeimiInstance;
-import com.ioyouyun.wchat.data.AuthResultData;
-import com.ioyouyun.wchat.message.HistoryMessage;
 import com.ioyouyun.wchat.message.WChatException;
-import com.ioyouyun.wchat.util.DebugConfig;
-import com.ioyouyun.wchat.util.HttpCallback;
-
-import org.json.JSONObject;
-
-import java.util.List;
 
 /**
  * Created by Bill on 2016/12/8.
@@ -37,10 +27,21 @@ import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
-    public static final int REQUEST_CODE_WRITE_SD = 1001;
+    private static final int REQUEST_CODE_WRITE_SD = 1001;
+
+    private boolean isOnlinePlatform;
+
+    private static String CLIENT_ID = "1-20525-4ab3a7c3ddb665945d0074f51e979ef0-andriod";
+    private static String SECRET = "6f3efde9fb49a76ff6bfb257f74f4d5b";
+    private static String CLIENT_ID_TEST = "1-20142-2e563db99a8ca41df48973b0c43ea50a-andriod";
+    private static String SECRET_TEST = "ace518dab1fde58eacb126df6521d34c";
+
+    private static final String CUSTOM_SERVICE_FIXED_ID = "584612"; // 正式客服id  // 584612
+    private static final String CUSTOM_SERVICE_FIXED_ID_TEST = "743849"; // 测试客服id  // 549341
 
     private ProgressBar progressBar;
     private TextInputEditText nickNameEdit;
+    private String nickName;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,11 +81,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        // TODO config 平台、客服号ID、用户ID昵称头像
-        CsAppUtils.isOnlinePlatform = false;
-        CsAppUtils.CUSTOM_SERVICE_ID = CsAppUtils.CUSTOM_SERVICE_FIXED_ID_TEST;
-
-        String nickName = LoginSharedUtil.getInstance(LoginActivity.this).getNickName(CsAppUtils.isOnlinePlatform);
+        String nickName = CsSharedUtil.getInstance(LoginActivity.this).getNickName(CsAppUtils.isOnlinePlatform);
         if (!TextUtils.isEmpty(nickName)) {
             nickNameEdit.setText(nickName);
         }
@@ -99,13 +96,11 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.rb_online) {
-                    CsAppUtils.isOnlinePlatform = true;
-                    CsAppUtils.CUSTOM_SERVICE_ID = CsAppUtils.CUSTOM_SERVICE_FIXED_ID;
+                    isOnlinePlatform = true;
                 } else if (checkedId == R.id.rb_test) {
-                    CsAppUtils.isOnlinePlatform = false;
-                    CsAppUtils.CUSTOM_SERVICE_ID = CsAppUtils.CUSTOM_SERVICE_FIXED_ID_TEST;
+                    isOnlinePlatform = false;
                 }
-                nickNameEdit.setText(LoginSharedUtil.getInstance(LoginActivity.this).getNickName(CsAppUtils.isOnlinePlatform));
+                nickNameEdit.setText(CsSharedUtil.getInstance(LoginActivity.this).getNickName(CsAppUtils.isOnlinePlatform));
             }
         });
     }
@@ -126,101 +121,47 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void handleLogin(View v) {
-        login();
-    }
-
-    private void setNickName(String uid) {
-        String nickName = nickNameEdit.getText().toString();
-        if (TextUtils.isEmpty(nickName)) {
-            CsAppUtils.nickName = uid;
-            LoginSharedUtil.getInstance(LoginActivity.this).setNickName("", CsAppUtils.isOnlinePlatform);
+        String clientId, secret, customerServiceId;
+        if (isOnlinePlatform) {
+            clientId = CLIENT_ID;
+            secret = SECRET;
+            customerServiceId = CUSTOM_SERVICE_FIXED_ID;
         } else {
-            CsAppUtils.nickName = nickName;
-            LoginSharedUtil.getInstance(LoginActivity.this).setNickName(nickName, CsAppUtils.isOnlinePlatform);
+            clientId = CLIENT_ID_TEST;
+            secret = SECRET_TEST;
+            customerServiceId = CUSTOM_SERVICE_FIXED_ID_TEST;
+        }
+        setNickName();
+        try {
+            CsManager csManager = CsManager.getInstance().init(this, clientId, secret, isOnlinePlatform).setCustomerServiceId(customerServiceId);
+            csManager.setUid("10086").setNickName(nickName).setAvatar("http://www.qqzhi.com/uploadpic/2014-10-07/133603351.jpg");
+            csManager.login(new CsManager.LoginCallback() {
+                @Override
+                public void success(String result) {
+                    closeProgress();
+                    gotoActivity(RecentContactActivity.class);
+                }
+
+                @Override
+                public void failure(Exception e) {
+                    closeProgress();
+                    CsLog.logD("登录失败");
+                }
+            });
+        } catch (WChatException e) {
+            e.printStackTrace();
         }
     }
 
-    /**
-     * 登录成功后开始接收消息
-     */
-    // TODO 登录成功之后一些操作，开启接受线程、注册广播
-    private void startReveive() {
-        CsReceiveMsgRunnable runnable = new CsReceiveMsgRunnable(CsAppUtils.mAppContext);
-        Thread msgThread = new Thread(runnable);
-        msgThread.start();
-    }
-
-    // TODO 登录流程 封装
-    private void login() {
-        progressBar.setVisibility(View.VISIBLE);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String clientId;
-                String sedret;
-                try {
-                    if (CsAppUtils.isOnlinePlatform) {
-                        clientId = CsAppUtils.CLIENT_ID;
-                        sedret = CsAppUtils.SECRET;
-                        WeimiInstance.getInstance().initSDK(LoginActivity.this, "1.2", ServerType.Online, "cn", "weibo", clientId);
-                    } else {
-                        clientId = CsAppUtils.CLIENT_ID_TEST;
-                        sedret = CsAppUtils.SECRET_TEST;
-                        WeimiInstance.getInstance().initSDK(LoginActivity.this, "1.2", ServerType.Test, "cn", "weibo", clientId);
-                    }
-                    WeimiInstance.getInstance().registerUid(CsAppUtils.generateOpenUDID(LoginActivity.this),
-                            clientId, sedret,
-                            new HttpCallback() {
-                                @Override
-                                public void onResponse(String s) {
-                                    try {
-                                        JSONObject responseObject = new JSONObject(s);
-                                        if (responseObject.has("result")) {
-                                            JSONObject resultObject = responseObject.getJSONObject("result");
-                                            CsLog.logD("获取token成功：" + resultObject.getString("uid"));
-                                            if (resultObject.has("refresh_token") && resultObject.has("access_token")) {
-                                                AuthResultData resultData = WeimiInstance.getInstance().oauthUser(resultObject.getString("access_token"), resultObject.getString("refresh_token"), false, 30);
-                                                closeProgress();
-                                                if (resultData.success) {
-                                                    startReveive();
-
-                                                    // 设置不sycn客服消息
-                                                    WeimiInstance.getInstance().shieldSyncUserId(CsAppUtils.CUSTOM_SERVICE_ID);
-                                                    // 获取未读消息数
-                                                    WeimiInstance.getInstance().getUnread();
-
-                                                    DebugConfig.DEBUG = true;
-                                                    CsAppUtils.uid = WeimiInstance.getInstance().getUID();
-                                                    setNickName(CsAppUtils.uid);
-                                                    CsLog.logD("登录成功：" + CsAppUtils.uid);
-                                                    gotoActivity(RecentContactActivity.class);
-                                                } else {
-                                                    CsLog.logD("登录失败");
-                                                }
-                                            }
-                                        }
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-
-                                @Override
-                                public void onResponseHistory(List<HistoryMessage> list) {
-
-                                }
-
-                                @Override
-                                public void onError(Exception e) {
-
-                                }
-                            });
-                } catch (WChatException e) {
-                    e.printStackTrace();
-                    CsLog.logD("登录失败");
-                    closeProgress();
-                }
-            }
-        }).start();
+    private void setNickName() {
+        String nickName = nickNameEdit.getText().toString();
+        if (TextUtils.isEmpty(nickName.trim())) {
+            this.nickName = "";
+            CsSharedUtil.getInstance(LoginActivity.this).setNickName("", CsAppUtils.isOnlinePlatform);
+        } else {
+            this.nickName = nickName;
+            CsSharedUtil.getInstance(LoginActivity.this).setNickName(nickName, CsAppUtils.isOnlinePlatform);
+        }
     }
 
     private void closeProgress() {

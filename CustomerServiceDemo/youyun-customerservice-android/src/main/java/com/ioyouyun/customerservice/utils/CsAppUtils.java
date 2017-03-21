@@ -42,10 +42,8 @@ import java.util.List;
 
 public class CsAppUtils {
 
-    public static String CLIENT_ID = "1-20525-4ab3a7c3ddb665945d0074f51e979ef0-andriod";
-    public static String SECRET = "6f3efde9fb49a76ff6bfb257f74f4d5b";
-    public static String CLIENT_ID_TEST = "1-20142-2e563db99a8ca41df48973b0c43ea50a-andriod";
-    public static String SECRET_TEST = "ace518dab1fde58eacb126df6521d34c";
+    public static String CLIENT_ID;
+    public static String SECRET;
 
     public static boolean isOnlinePlatform;
     public static Context mAppContext;
@@ -54,8 +52,6 @@ public class CsAppUtils {
     public static String headUrl = "http://avatar.csdn.net/6/A/5/1_y331271939.jpg"; // 用头像
 
     public static String CUSTOM_SERVICE_ID; // 客服ID
-    public static final String CUSTOM_SERVICE_FIXED_ID = "584612"; // 正式客服id  // 584612
-    public static final String CUSTOM_SERVICE_FIXED_ID_TEST = "549341"; // 测试客服id  // 549341
 
     public static final long MSG_TIME_SEPARATE = 300000L; // IM时间间隔5分钟
 
@@ -71,7 +67,7 @@ public class CsAppUtils {
     public static final String MSG_TYPE_DOWNLOAD_IMAGE_FINISH = "msg_type_download_image_finish"; // 收到大图后更新聊天数据,避免重复下载
     public static final String MSG_TYPE_POSITION = "msg_type_position"; // 收到大图后更新聊天数据,避免重复下载
 
-    public static int unReadNum = 0; // 用于暂时储存未读消息数
+//    public static int unReadNum = 0; // 用于暂时储存未读消息数
 
     public static int mScreenWidth;
     public static int mScreenHeigth;
@@ -91,9 +87,9 @@ public class CsAppUtils {
      *
      * @return
      */
-    public static String generateOpenUDID(Activity activity) {
+    public static String generateOpenUDID(Context context) {
         // Try to get the ANDROID_ID
-        String OpenUDID = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
+        String OpenUDID = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
         if (OpenUDID == null || OpenUDID.equals("9774d56d682e549c") | OpenUDID.length() < 15) {
             // if ANDROID_ID is null, or it's equals to the GalaxyTab generic
             // ANDROID_ID or bad, generates a new one
@@ -120,7 +116,7 @@ public class CsAppUtils {
 
     //////////////////////////////////////Android 6.0 运行时权限/////////////////////////////////////////
 
-    public interface PermissionCallback{
+    public interface PermissionCallback {
         void onComplete(int requestCode);
     }
 
@@ -129,7 +125,7 @@ public class CsAppUtils {
         if (deniedPermissions.size() > 0) {
             ActivityCompat.requestPermissions(activity, deniedPermissions.toArray(new String[deniedPermissions.size()]), requestCode);
         } else {
-            if(callback != null)
+            if (callback != null)
                 callback.onComplete(requestCode);
         }
     }
@@ -206,19 +202,18 @@ public class CsAppUtils {
      * @param sort 1:enter 2:leave
      * @return
      */
-    public static String encapsulateEnterOrLeaveMsg(int sort, String data) {
+    public static String encapsulateEnterOrLeaveMsg(int sort, String fromData) {
         JSONObject object = new JSONObject();
         try {
             object.put(TYPE, EVENT);
             JSONObject paramObj = new JSONObject();
             if (1 == sort) {
                 paramObj.put(SORT, ENTER_KEY);
-                JSONObject fromJson = new JSONObject();
-                if(!TextUtils.isEmpty(data))
-                    fromJson.put(KP_SOURCE, data);
-                paramObj.put(FROM, fromJson);
-            }
-            else if (2 == sort)
+                if (!TextUtils.isEmpty(fromData)) {
+                    JSONObject fromJson = new JSONObject(fromData);
+                    paramObj.put(FROM, fromJson);
+                }
+            } else if (2 == sort)
                 paramObj.put(SORT, LEAVE_KEY);
             object.put(PARAMS, paramObj);
         } catch (JSONException e) {

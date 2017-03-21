@@ -7,27 +7,28 @@ import android.support.annotation.NonNull;
 /**
  * Created by Bill on 2016/12/30.
  * <p>
- * 单例 存储用户昵称
+ * 单例 sharedPreferences 封装
  */
 
-public class LoginSharedUtil {
+public class CsSharedUtil {
 
     private static SharedPreferences sharedPreferences;
-    public static final String NAME = "kefu_login_preference";
+    public static final String NAME = "customerservice_preference";
     public static final String KEY_NICKNAME = "key_nickname";
     public static final String KEY_NICKNAME_TEST = "key_nickname_test";
+    public static final String KEY_UNREAD_NUM = "key_unread_num";
 
-    private static volatile LoginSharedUtil instance;
+    private static volatile CsSharedUtil instance;
 
-    private LoginSharedUtil(Context context) {
+    private CsSharedUtil(Context context) {
         sharedPreferences = context.getSharedPreferences(NAME, Context.MODE_PRIVATE);
     }
 
-    public static LoginSharedUtil getInstance(@NonNull Context context) {
+    public static CsSharedUtil getInstance(@NonNull Context context) {
         if (instance == null) {
-            synchronized (LoginSharedUtil.class) {
+            synchronized (CsSharedUtil.class) {
                 if (instance == null) {
-                    instance = new LoginSharedUtil(context);
+                    instance = new CsSharedUtil(context);
                 }
             }
         }
@@ -53,4 +54,19 @@ public class LoginSharedUtil {
         else
             return sharedPreferences.getString(KEY_NICKNAME_TEST, "");
     }
+
+    public void setUnreadNum(int unreadNum) {
+        if (sharedPreferences == null)
+            return;
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(KEY_UNREAD_NUM, unreadNum);
+        editor.commit();
+    }
+
+    public int getUnreadNum() {
+        if (sharedPreferences == null)
+            return 0;
+        return sharedPreferences.getInt(KEY_UNREAD_NUM, 0);
+    }
+
 }
