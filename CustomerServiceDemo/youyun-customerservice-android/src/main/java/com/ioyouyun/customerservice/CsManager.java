@@ -58,8 +58,8 @@ public class CsManager {
      * 初始化CsMagager
      *
      * @param context          上下文
-     * @param clientId
-     * @param secret
+     * @param clientId         游云平台App ClientID
+     * @param secret           游云平台Secret
      * @param isOnlinePlatform 是否线上平台
      * @return
      */
@@ -84,7 +84,7 @@ public class CsManager {
     }
 
     /**
-     * 客服消息未读数的监听
+     * 注册客服消息未读数的监听
      *
      * @return
      */
@@ -93,11 +93,21 @@ public class CsManager {
         return this;
     }
 
+    /**
+     * 移除客服消息未读数的监听
+     *
+     * @return
+     */
     public CsManager removeUnreadNumListener(UnreadNumListener unreadNumListener) {
         this.unreadNumListeners.remove(unreadNumListener);
         return this;
     }
 
+    /**
+     * 清空客服消息未读数的监听
+     *
+     * @return
+     */
     public CsManager clearUnreadNumListeners() {
         this.unreadNumListeners.clear();
         return this;
@@ -116,6 +126,7 @@ public class CsManager {
 
     /**
      * 设置用户Uid
+     *
      * @param uid
      * @return
      */
@@ -126,6 +137,7 @@ public class CsManager {
 
     /**
      * 设置用户昵称
+     *
      * @param nickName
      * @return
      */
@@ -136,6 +148,7 @@ public class CsManager {
 
     /**
      * 设置用户头像
+     *
      * @param avatar
      * @return
      */
@@ -253,9 +266,9 @@ public class CsManager {
         CsChatActivity.startActivity(context, fromData);
     }
 
-//    public void gotoCsChatActivity(Activity context, String fromData, ) {
-//        CsChatActivity.startActivity(context, fromData);
-//    }
+    //    public void gotoCsChatActivity(Activity context, String fromData, ) {
+    //        CsChatActivity.startActivity(context, fromData);
+    //    }
 
     public interface UnreadNumListener {
         void onUnreadNum(int unreadNum);

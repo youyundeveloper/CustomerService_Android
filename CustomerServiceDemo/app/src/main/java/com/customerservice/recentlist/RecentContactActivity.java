@@ -102,8 +102,8 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
             }
             CsManager.getInstance().gotoCsChatActivity(this, fromData);
 
-            CsSharedUtil.getInstance(RecentContactActivity.this).setUnreadNum(0);
             showUnRead(0);
+            CsSharedUtil.getInstance(RecentContactActivity.this).setUnreadNum(0);
         }
     }
 
@@ -123,6 +123,7 @@ public class RecentContactActivity extends AppCompatActivity implements View.OnC
                         @Override
                         public void run() {
                             showUnRead(unreadNum);
+                            CsSharedUtil.getInstance(RecentContactActivity.this).setUnreadNum(unreadNum);
                         }
                     });
                 }
